@@ -793,6 +793,22 @@ class ValuePredictionHead(nn.Module):
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
 
+class ValuePredictionHeadPrositMSMS(nn.Module):
+    def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
+        super().__init__()
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
+
+    def forward(self, pooled_output, targets=None):
+        value_pred = self.value_prediction(pooled_output)
+        outputs = (value_pred,)
+
+        
+        if targets is not None:
+            loss_fct = nn.MSELoss()
+            
+            value_pred_loss = loss_fct(value_pred, targets)
+            outputs = (value_pred_loss,) + outputs
+        return outputs  # (loss), value_prediction
 
 class SequenceClassificationHead(nn.Module):
     def __init__(self, hidden_size: int, num_labels: int):

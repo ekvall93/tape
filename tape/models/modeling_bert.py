@@ -37,6 +37,8 @@ from .modeling_utils import SequenceToSequenceClassificationHead
 from .modeling_utils import PairwiseContactPredictionHead
 from ..registry import registry
 
+from .modeling_utils import ValuePredictionHeadPrositMSMS
+
 logger = logging.getLogger(__name__)
 
 URL_PREFIX = "https://s3.amazonaws.com/proteindata/pytorch-models/"
@@ -575,4 +577,29 @@ class ProteinBertForContactPrediction(ProteinBertAbstractModel):
         sequence_output, pooled_output = outputs[:2]
         outputs = self.predict(sequence_output, protein_length, targets) + outputs[2:]
         # (loss), prediction_scores, (hidden_states), (attentions)
+        return outputs
+
+@registry.register_task_model('prosit_msms_cid', 'transformer')
+@registry.register_task_model('prosit_msms_hcd', 'transformer')
+class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.bert = ProteinBertModel(config)
+        #Hardcode extra dim and output for now
+        self.predict = ValuePredictionHeadPrositMSMS(config.hidden_size + 7, 174)
+
+        self.init_weights()
+
+
+    def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
+
+        outputs = self.bert(input_ids, input_mask=input_mask)
+
+        sequence_output, pooled_output = outputs[:2]
+
+        x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
+        outputs = self.predict(x, targets) + outputs[2:]
+
         return outputs
