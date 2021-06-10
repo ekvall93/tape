@@ -649,7 +649,7 @@ class SecondaryStructureDataset(Dataset):
 
         return output
 
-@registry.register_task('prosit_msms_cid')
+@registry.register_task('prosit_fragmentation_cid')
 class PrositMSMSDataset(Dataset):
 
     def __init__(self,
@@ -666,7 +666,7 @@ class PrositMSMSDataset(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_msms_cid/prosit_msms_cid_{split}.lmdb'
+        data_file = f'prosit_fragmentation_cid/prosit_fragmentation_cid_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
 
     def __len__(self) -> int:
@@ -696,7 +696,7 @@ class PrositMSMSDataset(Dataset):
                 'charge': charge_tensor}
 
 
-@registry.register_task('prosit_msms_hcd')
+@registry.register_task('prosit_fragmentation_hcd')
 class PrositMSMSDataset(Dataset):
 
     def __init__(self,
@@ -713,7 +713,7 @@ class PrositMSMSDataset(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_msms_hcd/prosit_msms_hcd_{split}.lmdb'
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
 
     def __len__(self) -> int:

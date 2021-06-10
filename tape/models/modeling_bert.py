@@ -37,7 +37,7 @@ from .modeling_utils import SequenceToSequenceClassificationHead
 from .modeling_utils import PairwiseContactPredictionHead
 from ..registry import registry
 
-from .modeling_utils import ValuePredictionHeadPrositMSMS
+from .modeling_utils import ValuePredictionHeadPrositFragmentation
 
 logger = logging.getLogger(__name__)
 
@@ -579,8 +579,8 @@ class ProteinBertForContactPrediction(ProteinBertAbstractModel):
         # (loss), prediction_scores, (hidden_states), (attentions)
         return outputs
 
-@registry.register_task_model('prosit_msms_cid', 'transformer')
-@registry.register_task_model('prosit_msms_hcd', 'transformer')
+@registry.register_task_model('prosit_fragmentation_cid', 'transformer')
+@registry.register_task_model('prosit_fragmentation_hcd', 'transformer')
 class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
 
     def __init__(self, config):
@@ -588,7 +588,7 @@ class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
 
         self.bert = ProteinBertModel(config)
         #Hardcode extra dim and output for now
-        self.predict = ValuePredictionHeadPrositMSMS(config.hidden_size + 7, 174)
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size + 7, 174)
 
         self.init_weights()
 

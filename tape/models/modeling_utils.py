@@ -793,7 +793,7 @@ class ValuePredictionHead(nn.Module):
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
 
-class ValuePredictionHeadPrositMSMS(nn.Module):
+class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
         self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
