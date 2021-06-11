@@ -588,7 +588,7 @@ class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
 
         self.bert = ProteinBertModel(config)
         #Hardcode extra dim and output for now
-        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size + 7, 174)
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size + 7, 174, config.final_layer_dropout_prob)
 
         self.init_weights()
 

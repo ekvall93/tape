@@ -650,7 +650,7 @@ class SecondaryStructureDataset(Dataset):
         return output
 
 @registry.register_task('prosit_fragmentation_cid')
-class PrositMSMSDataset(Dataset):
+class PrositFragmentationDataset(Dataset):
 
     def __init__(self,
                  data_path: Union[str, Path],
@@ -679,25 +679,25 @@ class PrositMSMSDataset(Dataset):
         return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
-        input_ids, input_mask, fluorescence_true_value, collision_energy, charge = tuple(zip(*batch))
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
 
         collision_energy = np.stack(collision_energy)
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
         input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
-        fluorescence_true_value = torch.FloatTensor(fluorescence_true_value)  # type: ignore
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
 
         collision_energy_tensor = torch.FloatTensor(collision_energy)
         charge_tensor = torch.FloatTensor(charge)
 
         return {'input_ids': input_ids,
                 'input_mask': input_mask,
-                'targets': fluorescence_true_value,
+                'targets': intensities_raw_true_value,
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
 
 
 @registry.register_task('prosit_fragmentation_hcd')
-class PrositMSMSDataset(Dataset):
+class PrositFragmentationDataset(Dataset):
 
     def __init__(self,
                  data_path: Union[str, Path],
@@ -721,25 +721,24 @@ class PrositMSMSDataset(Dataset):
 
     def __getitem__(self, index: int):
         item = self.data[index]
-        token_ids = self.tokenizer.encode(item['primary'])
+        token_ids = self.tokenizer.encode(item['sequence_integer'])
         input_mask = np.ones_like(token_ids)
-        return token_ids, input_mask, item['log_fluorescence'], item["collision_energy"], item["charge"]
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
-        input_ids, input_mask, fluorescence_true_value, collision_energy, charge = tuple(zip(*batch))
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
 
         collision_energy = np.stack(collision_energy)
-        
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
         input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
-        fluorescence_true_value = torch.FloatTensor(fluorescence_true_value)  # type: ignore
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
 
         collision_energy_tensor = torch.FloatTensor(collision_energy)
         charge_tensor = torch.FloatTensor(charge)
 
         return {'input_ids': input_ids,
                 'input_mask': input_mask,
-                'targets': fluorescence_true_value,
+                'targets': intensities_raw_true_value,
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
 
