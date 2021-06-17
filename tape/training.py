@@ -410,7 +410,8 @@ def run_train(model_type: str,
               debug: bool = False,
               log_level: typing.Union[str, int] = logging.INFO,
               patience: int = -1,
-              resume_from_checkpoint: bool = False) -> None:
+              resume_from_checkpoint: bool = False,
+              fine_tune : bool = False) -> None:
 
     # SETUP AND LOGGING CODE #
     input_args = locals()
@@ -444,7 +445,7 @@ def run_train(model_type: str,
 
     model = registry.get_task_model(model_type, task, model_config_file, from_pretrained)
     model = model.to(device)
-    optimizer = utils.setup_optimizer(model, learning_rate)
+    optimizer = utils.setup_optimizer(model, learning_rate, fine_tune)
     viz = visualization.get(log_dir, exp_dir, local_rank, debug=debug)
     viz.log_config(input_args)
     viz.log_config(model.config.to_dict())

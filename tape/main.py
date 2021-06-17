@@ -92,6 +92,8 @@ def create_train_parser(base_parser: argparse.ArgumentParser) -> argparse.Argume
                              "training")
     parser.add_argument('--resume_from_checkpoint', action='store_true',
                         help="whether to resume training from the checkpoint")
+    parser.add_argument('--fine_tune', default=False, type=bool,
+                        help='Which split to run on')
     return parser
 
 

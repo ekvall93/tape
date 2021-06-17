@@ -53,7 +53,7 @@ def setup_logging(local_rank: int,
 
 
 def setup_optimizer(model,
-                    learning_rate: float):
+                    learning_rate: float, fine_tune: bool):
     """Create the AdamW optimizer for the given model with the specified learning rate. Based on
     creation in the pytorch_transformers repository.
 
@@ -65,23 +65,29 @@ def setup_optimizer(model,
         optimizer (AdamW): An AdamW optimizer
 
     """
+    if fine_tune:
+        for i, p in enumerate(model.parameters()):
+            p.requires_grad = False
+        
+        for p in model.predict.value_prediction.parameters():
+            p.requires_grad = True
+
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta', 'LayerNorm']
     optimizer_grouped_parameters = [
         {
             "params": [
-                p for n, p in param_optimizer if not any(nd in n for nd in no_decay)
+                p for n, p in param_optimizer if not any(nd in n for nd in no_decay) and p.requires_grad
             ],
             "weight_decay": 0.01,
         },
         {
             "params": [
-                p for n, p in param_optimizer if any(nd in n for nd in no_decay)
+                p for n, p in param_optimizer if any(nd in n for nd in no_decay) and p.requires_grad
             ],
             "weight_decay": 0.0,
         },
     ]
-
     optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate)
     return optimizer
 
