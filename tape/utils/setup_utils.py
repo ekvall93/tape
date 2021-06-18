@@ -65,7 +65,8 @@ def setup_optimizer(model,
         optimizer (AdamW): An AdamW optimizer
 
     """
-    if fine_tune:
+
+    """ if fine_tune:
         for i, p in enumerate(model.parameters()):
             p.requires_grad = False
         
@@ -73,7 +74,7 @@ def setup_optimizer(model,
             p.requires_grad = True
     else:
         for i, p in enumerate(model.parameters()):
-            p.requires_grad = True
+            p.requires_grad = True """
 
 
     param_optimizer = list(model.named_parameters())
@@ -81,13 +82,13 @@ def setup_optimizer(model,
     optimizer_grouped_parameters = [
         {
             "params": [
-                p for n, p in param_optimizer if not any(nd in n for nd in no_decay) and p.requires_grad
+                p for n, p in param_optimizer if not any(nd in n for nd in no_decay)
             ],
             "weight_decay": 0.01,
         },
         {
             "params": [
-                p for n, p in param_optimizer if any(nd in n for nd in no_decay) and p.requires_grad
+                p for n, p in param_optimizer if any(nd in n for nd in no_decay)
             ],
             "weight_decay": 0.0,
         },
