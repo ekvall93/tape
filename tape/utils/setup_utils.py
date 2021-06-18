@@ -71,6 +71,10 @@ def setup_optimizer(model,
         
         for p in model.predict.value_prediction.parameters():
             p.requires_grad = True
+    else:
+        for i, p in enumerate(model.parameters()):
+            p.requires_grad = True
+
 
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta', 'LayerNorm']
