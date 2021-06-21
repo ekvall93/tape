@@ -32,6 +32,9 @@ import torch.nn.functional as F
 
 from .file_utils import cached_path
 
+from .losses import masked_spectral_distance
+
+
 CONFIG_NAME = "config.json"
 WEIGHTS_NAME = "pytorch_model.bin"
 
@@ -804,7 +807,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
 
         
         if targets is not None:
-            loss_fct = nn.MSELoss()
+            loss_fct = masked_spectral_distance
             
             value_pred_loss = loss_fct(value_pred, targets)
             outputs = (value_pred_loss,) + outputs

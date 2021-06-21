@@ -581,7 +581,7 @@ class ProteinBertForContactPrediction(ProteinBertAbstractModel):
 
 @registry.register_task_model('prosit_fragmentation_cid', 'transformer')
 @registry.register_task_model('prosit_fragmentation_hcd', 'transformer')
-class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
+class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
 
     def __init__(self, config):
         super().__init__(config)
@@ -598,6 +598,8 @@ class ProteinBertForValuePredictionProsit(ProteinBertAbstractModel):
         outputs = self.bert(input_ids, input_mask=input_mask)
 
         sequence_output, pooled_output = outputs[:2]
+
+        
 
         x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
         outputs = self.predict(x, targets) + outputs[2:]
