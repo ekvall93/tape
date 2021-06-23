@@ -11,7 +11,8 @@ def nanmean(v, *args, inplace=False, **kwargs):
     return v.sum(*args, **kwargs) / (~is_nan).float().sum(*args, **kwargs)
 
 def nanmedian(v):
-    filtered_v = v[~torch.any(tensor.isnan(),dim=1)]
+    is_nan = torch.isnan(v)
+    filtered_v = v[~is_nan]
     return torch.median(filtered_v)
 
 
