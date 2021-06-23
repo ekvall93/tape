@@ -16,7 +16,7 @@ def nanmedian(v):
     return torch.median(filtered_v)
 
 
-def masked_spectral_distance(true, pred, epsilon = 1e-12):
+def masked_spectral_distance(true, pred, epsilon = 1e-7):
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
