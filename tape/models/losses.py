@@ -22,5 +22,5 @@ def masked_spectral_distance(true, pred, epsilon = 1e-12):
     arccos = torch.acos(product_clipped)
     spectral_distance = 2 * arccos / np.pi
 
-    return torch.mean(spectral_distance)
+    return torch.nanmedian(spectral_distance)
 
