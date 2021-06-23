@@ -10,6 +10,11 @@ def nanmean(v, *args, inplace=False, **kwargs):
     v[is_nan] = 0
     return v.sum(*args, **kwargs) / (~is_nan).float().sum(*args, **kwargs)
 
+def nanmedian(v):
+    filtered_v = v[~torch.any(tensor.isnan(),dim=1)]
+    return torch.median(filtered_v)
+
+
 def masked_spectral_distance(true, pred, epsilon = 1e-12):
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
@@ -22,5 +27,5 @@ def masked_spectral_distance(true, pred, epsilon = 1e-12):
     arccos = torch.acos(product_clipped)
     spectral_distance = 2 * arccos / np.pi
 
-    return torch.nanmedian(spectral_distance)
+    return nanmedian(spectral_distance)
 
