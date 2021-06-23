@@ -18,8 +18,9 @@ def masked_spectral_distance(true, pred, epsilon = 1e-12):
     true_norm = f.normalize(true_masked,dim=-1,p=2)
     product = torch.sum(pred_norm * true_norm, axis=1)
     
-    arccos = torch.acos(product)
+    product_clipped = torch.clip(product, min=-1, max=1)
+    arccos = torch.acos(product_clipped)
     spectral_distance = 2 * arccos / np.pi
 
-    return nanmean(spectral_distance)
+    return torch.mean(spectral_distance)
 
