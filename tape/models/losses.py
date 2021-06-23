@@ -23,11 +23,9 @@ def masked_spectral_distance(true, pred, epsilon = 1e-7):
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
     product = cos(pred_masked, true_masked)
-    
-    product_clipped = torch.clamp(product, min=-1, max=1)
-    arccos = torch.acos(product_clipped)
+    #product_clipped = torch.clamp(product, min=-1, max=1)
+    arccos = torch.acos(product)
     spectral_distance = 2 * arccos / np.pi
-
     return torch.mean(spectral_distance)
 
 def masked_spectral_distance_old(true, pred, epsilon = 1e-7):
