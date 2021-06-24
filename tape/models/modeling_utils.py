@@ -684,11 +684,17 @@ class SimpleMLP(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  out_dim: int,
-                 dropout: float = 0.):
+                 dropout: float = 0.
+                 useLeakyRelu: bool =False):
         super().__init__()
+        if useLeakyRelu:
+            activation = nn.LeakyReLU(0.3)
+        else:
+            activation = nn.ReLU()
+
         self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            nn.ReLU(),
+            activation,
             nn.Dropout(dropout, inplace=True),
             weight_norm(nn.Linear(hid_dim, out_dim), dim=None))
 
@@ -799,7 +805,7 @@ class ValuePredictionHead(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
 
     def forward(self, pooled_output, targets=None):
         value_pred = self.value_prediction(pooled_output)
