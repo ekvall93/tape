@@ -684,7 +684,7 @@ class SimpleMLP(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  out_dim: int,
-                 dropout: float = 0.
+                 dropout: float = 0.,
                  useLeakyRelu: bool =False):
         super().__init__()
         if useLeakyRelu:
