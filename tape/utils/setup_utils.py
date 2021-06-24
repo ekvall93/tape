@@ -66,7 +66,7 @@ def setup_optimizer(model,
 
     """
 
-    """ if fine_tune:
+    if fine_tune:
         for i, p in enumerate(model.parameters()):
             p.requires_grad = False
         
@@ -74,7 +74,7 @@ def setup_optimizer(model,
             p.requires_grad = True
     else:
         for i, p in enumerate(model.parameters()):
-            p.requires_grad = True """
+            p.requires_grad = True
 
 
     param_optimizer = list(model.named_parameters())
