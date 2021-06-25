@@ -588,6 +588,34 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         self.bert = ProteinBertModel(config)
         #Hardcode extra dim and output for now
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
+
+        self.init_weights()
+
+
+    def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
+
+        outputs = self.bert(input_ids, input_mask=input_mask)
+
+        sequence_output, pooled_output = outputs[:2]
+
+        meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
+
+        
+        outputs = self.predict(pooled_output, meta_data, targets) + outputs[2:]
+
+        return outputs
+
+
+""" @registry.register_task_model('prosit_fragmentation_cid', 'transformer')
+@registry.register_task_model('prosit_fragmentation_hcd', 'transformer')
+class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.bert = ProteinBertModel(config)
+        #Hardcode extra dim and output for now
         self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size + 7, 174, config.final_layer_dropout_prob)
 
         self.init_weights()
@@ -599,9 +627,9 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         sequence_output, pooled_output = outputs[:2]
 
-        
-
         x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
+
+        
         outputs = self.predict(x, targets) + outputs[2:]
 
-        return outputs
+        return outputs """

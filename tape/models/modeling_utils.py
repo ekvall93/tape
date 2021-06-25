@@ -701,6 +701,26 @@ class SimpleMLP(nn.Module):
     def forward(self, x):
         return self.main(x)
 
+class SimpleLinear(nn.Module):
+
+    def __init__(self,
+                 in_dim: int,
+                 hid_dim: int,
+                 dropout: float = 0.,
+                 useLeakyRelu: bool =False):
+        super().__init__()
+        if useLeakyRelu:
+            activation = nn.LeakyReLU(0.3)
+        else:
+            activation = nn.ReLU()
+
+        self.main = nn.Sequential(
+            weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
+            activation,
+            nn.Dropout(dropout, inplace=True))
+
+    def forward(self, x):
+        return self.main(x)
 
 class SimpleConv(nn.Module):
 
@@ -806,6 +826,38 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
         self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.meta_dense = SimpleLinear(7, hidden_size, 0.1, False)
+
+    def forward(self, pooled_output, meta_data, targets=None):
+        meta = self.meta_dense(meta_data)
+
+        x = torch.mul(meta, pooled_output)
+        
+
+        #X_tmp = x.unsqueeze(2).repeat(1, 29, 1)
+        #G = torch.nn.LSTM(29, 512)
+        #y = G(x.view(len(29), 1, -1))
+        #print(X_tmp.shape)
+        #y = torch.repeat_interleave(x, 29, 2)
+        
+        #print(X_tmp.shape)
+
+        value_pred = self.value_prediction(x)
+        outputs = (value_pred,)
+
+        
+        if targets is not None:
+            loss_fct = masked_spectral_distance
+            
+            value_pred_loss = loss_fct(targets, value_pred)
+            outputs = (value_pred_loss,) + outputs
+        return outputs  # (loss), value_prediction
+
+
+""" class ValuePredictionHeadPrositFragmentation(nn.Module):
+    def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
+        super().__init__()
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
 
     def forward(self, pooled_output, targets=None):
         value_pred = self.value_prediction(pooled_output)
@@ -817,7 +869,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
             
             value_pred_loss = loss_fct(targets, value_pred)
             outputs = (value_pred_loss,) + outputs
-        return outputs  # (loss), value_prediction
+        return outputs  # (loss), value_prediction """
 
 class SequenceClassificationHead(nn.Module):
     def __init__(self, hidden_size: int, num_labels: int):

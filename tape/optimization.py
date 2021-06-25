@@ -133,7 +133,8 @@ class AdamW(Optimizer):
                  betas=(0.9, 0.999),
                  eps=1e-6,
                  weight_decay=0.0,
-                 correct_bias=True):
+                 correct_bias=True,
+                 amsgrad=False):
         if lr < 0.0:
             raise ValueError("Invalid learning rate: {} - should be >= 0.0".format(lr))
         if not 0.0 <= betas[0] < 1.0:
@@ -143,7 +144,7 @@ class AdamW(Optimizer):
         if not 0.0 <= eps:
             raise ValueError("Invalid epsilon value: {} - should be >= 0.0".format(eps))
         defaults = dict(lr=lr, betas=betas, eps=eps, weight_decay=weight_decay,
-                        correct_bias=correct_bias)
+                        correct_bias=correct_bias, amsgrad=amsgrad)
         super(AdamW, self).__init__(params, defaults)
 
     def step(self, closure=None):

@@ -93,7 +93,7 @@ def setup_optimizer(model,
             "weight_decay": 0.0,
         },
     ]
-    optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate)
+    optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate, amsgrad=True)
     return optimizer
 
 
