@@ -40,6 +40,17 @@ WEIGHTS_NAME = "pytorch_model.bin"
 
 logger = logging.getLogger(__name__)
 
+class ProteinLSTMLayer(nn.Module):
+
+    def __init__(self, input_size: int, hidden_size: int, dropout: float = 0.):
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+
+    def forward(self, inputs):
+        inputs = self.dropout(inputs)
+        self.lstm.flatten_parameters()
+        return self.lstm(inputs)
 
 class ProteinConfig(object):
     """ Base class for all configuration classes.
@@ -825,24 +836,31 @@ class ValuePredictionHead(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.value_prediction = SimpleMLP(512, 512, out, dropout, True)
         self.meta_dense = SimpleLinear(7, hidden_size, 0.1, False)
+        self.G = ProteinLSTMLayer(768, 512)
 
-    def forward(self, pooled_output, meta_data, targets=None):
+    def forward(self, sequence_output, meta_data, targets=None):
         meta = self.meta_dense(meta_data)
 
-        x = torch.mul(meta, pooled_output)
+        #x = torch.mul(meta[...,None], sequence_output)
+        #print(meta.shape)
+        #print(sequence_output.shape)
+        x = meta[:,None,:] * sequence_output
+        #print(x.shape)
         
 
         #X_tmp = x.unsqueeze(2).repeat(1, 29, 1)
-        #G = torch.nn.LSTM(29, 512)
-        #y = G(x.view(len(29), 1, -1))
-        #print(X_tmp.shape)
+        
+        sequence, pooled_out = self.G(x)
+        y = pooled_out[0].squeeze()
+        #print(sequence.shape)
+        #print(pooled_out[0].squeeze().shape)
         #y = torch.repeat_interleave(x, 29, 2)
         
         #print(X_tmp.shape)
 
-        value_pred = self.value_prediction(x)
+        value_pred = self.value_prediction(y)
         outputs = (value_pred,)
 
         
