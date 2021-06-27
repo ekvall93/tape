@@ -18,19 +18,21 @@ def nanmedian(v):
 cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
 
-def masked_spectral_distance(true, pred, epsilon = 1e-7):
-    #pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
-    #true_masked = ((true + 1) * true) / (true + 1 + epsilon)
-
-    pred_masked = ((true + 1) * pred) / (torch.clamp(true + 1, min=epsilon))
-    true_masked = ((true + 1) * true) / (torch.clamp(true + 1, min=epsilon))
+def masked_spectral_distance(true, pred, epsilon = torch.finfo(torch.float16).eps):
+    #print(epsilon)
     
-    cosSim = -1 * cos(pred_masked, true_masked)
+    pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
+    true_masked = ((true + 1) * true) / (true + 1 + epsilon)
+
+    #pred_masked = ((true + 1) * pred) / (torch.clamp(true + 1, min=epsilon))
+    #true_masked = ((true + 1) * true) / (torch.clamp(true + 1, min=epsilon))
+    
+    cosSim = cos(pred_masked, true_masked)
     #arccos = torch.acos(spectral_distance)
-    """ product_clipped = torch.clamp(cosSim, min=-0.99999999, max=0.99999999)
+    product_clipped = torch.clamp(cosSim, min=-0.99999999, max=0.99999999)
     arccos = torch.acos(product_clipped)
-    spectral_distance = 2 * arccos / np.pi """
-    return torch.mean(cosSim)
+    spectral_distance = 2 * arccos / np.pi
+    return torch.mean(spectral_distance)
 
 def masked_spectral_distance_old(true, pred, epsilon = 1e-7):
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
