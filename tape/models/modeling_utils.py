@@ -752,7 +752,7 @@ class SimpleLinear(nn.Module):
 
         self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            
+            activation,
             nn.Dropout(dropout, inplace=True))
 
     def forward(self, x):
