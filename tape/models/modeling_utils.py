@@ -959,28 +959,28 @@ class ValuePredictionHead(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
-        self.value_prediction = SimpleMLP(512, 256, out, 0.3, True)
+        self.value_prediction = SimpleMLP(768, 256, out, 0.3, True)
         self.meta_dense = SimpleLinear(7, hidden_size, 0.3, False)
         self.G = ProteinLSTMLayer(768, 512)
         self.pooler = ProteinLSTMPooler(256, 1)
         #self.decode = ProteinLSTMModelProsit(ProteinLSTMConfig())
 
-    def forward(self, sequence_output, meta_data, targets=None):
+    def forward(self, pooled_output, meta_data, targets=None):
         meta = self.meta_dense(meta_data)
 
-        #x = torch.mul(meta[...,None], sequence_output)
+        y = torch.mul(pooled_output[...,None], sequence_output)
         #print(meta.shape)
         #print(sequence_output.shape)
-        x = meta[:,None,:] * sequence_output
+        #x = meta[:,None,:] * sequence_output
         #print(x.shape)
         
         #outputs = self.decode(x)
         #sequence_output, pooled_output = outputs[:2]
         #X_tmp = x.unsqueeze(2).repeat(1, 29, 1)
         
-        sequence, pooled_out = self.G(x)
+        #sequence, pooled_out = self.G(x)
         #y = self.pooler(pooled_out[1])
-        y = pooled_out[0].squeeze()
+        #y = pooled_out[0].squeeze()
         #print(y.shape)
         #print(sequence.shape)
         #print(sequence.shape)
