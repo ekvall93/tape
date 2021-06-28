@@ -967,8 +967,11 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
 
     def forward(self, pooled_output, meta_data, targets=None):
         meta = self.meta_dense(meta_data)
-
-        y = torch.mul(pooled_output[...,None], sequence_output)
+        #y = torch.mul(pooled_output[...,None], meta)
+        #print(meta.shape)
+        #print(pooled_output.shape)
+        y = meta * pooled_output
+        #y = torch.mul(pooled_output[...,None], meta)
         #print(meta.shape)
         #print(sequence_output.shape)
         #x = meta[:,None,:] * sequence_output
