@@ -858,6 +858,39 @@ class ValuePredictionHead(nn.Module):
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
 
+class Attention(nn.Module):
+    def __init__(self, device, hidden_size):
+        super(Attention, self).__init__()
+        self.device = device
+
+        
+        self.hidden_size = hidden_size
+
+        self.concat_linear = nn.Linear(self.hidden_size * 2, self.hidden_size)
+
+        
+        self.attn = nn.Linear(self.hidden_size, hidden_size)
+
+
+    def forward(self, rnn_outputs, final_hidden_state):
+        # rnn_output.shape:         (batch_size, seq_len, hidden_size)
+        # final_hidden_state.shape: (batch_size, hidden_size)
+        # NOTE: hidden_size may also reflect bidirectional hidden states (hidden_size = num_directions * hidden_dim)
+        batch_size, seq_len, _ = rnn_outputs.shape
+        
+        
+        attn_weights = self.attn(rnn_outputs) # (batch_size, seq_len, hidden_dim)
+        attn_weights = torch.bmm(attn_weights, final_hidden_state.unsqueeze(2))
+        
+        attn_weights = F.softmax(attn_weights.squeeze(2), dim=1)
+
+        context = torch.bmm(rnn_outputs.transpose(1, 2), attn_weights.unsqueeze(2)).squeeze(2)
+
+        attn_hidden = torch.tanh(self.concat_linear(torch.cat((context, final_hidden_state), dim=1)))
+
+        return attn_hidden, attn_weights
+
+
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
@@ -867,6 +900,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         #self.pooler = ProteinLSTMPooler(256, 1)
         self.output_layer = nn.Linear(29,512)
         #self.decode = ProteinLSTMModelProsit(ProteinLSTMConfig())
+        self.attn = Attention('cuda', 512)
 
     def forward(self, sequence_output, meta_data, targets=None):
         meta = self.meta_dense(meta_data)
@@ -880,13 +914,24 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         #outputs = self.decode(x)
         #sequence_output, pooled_output = outputs[:2]
         #X_tmp = x.unsqueeze(2).repeat(1, 29, 1)
-        
+        batch_size, seq_len, hidden = x.shape
+        #print(hidden)
+
         sequence, pooled_out = self.G(x)
+
+        final_state = pooled_out[0].view(1, 1, batch_size, 512)[-1]
+        final_hidden_state = final_state.squeeze(0)
+
+        
+        rnn_output = sequence
+        #print(rnn_output.shape)
+        X, attn_weights = self.attn(rnn_output, final_hidden_state)
+        #print(X.shape)
         #y = self.output_layer(sequence)
         #print(y.shape)
         #print(sequence.shape)
         #y = self.pooler(pooled_out[1])
-        y = pooled_out[0].squeeze()
+        #y = pooled_out[0].squeeze()
         #print(y.shape)
         #print(sequence.shape)
         #print(sequence.shape)
@@ -895,7 +940,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         
         #print(X_tmp.shape)
 
-        value_pred = self.value_prediction(y)
+        value_pred = self.value_prediction(X)
         outputs = (value_pred,)
 
         
