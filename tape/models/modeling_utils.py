@@ -894,8 +894,8 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
-        self.value_prediction = SimpleMLP(512, 256, out, 0.1, True)
-        self.meta_dense = SimpleLinear(7, hidden_size, 0.1, False)
+        self.value_prediction = SimpleMLP(512, 256, out, dropout, True)
+        self.meta_dense = SimpleLinear(7, hidden_size, dropout, False)
         self.G = ProteinLSTMLayer(768, 512)
         #self.pooler = ProteinLSTMPooler(256, 1)
         self.output_layer = nn.Linear(29,512)
