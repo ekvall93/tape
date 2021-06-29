@@ -891,7 +891,7 @@ class Attention(nn.Module):
         return attn_hidden, attn_weights
 
 
-""" class ValuePredictionHeadPrositFragmentation(nn.Module):
+class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
         self.value_prediction = SimpleMLP(512, 256, out, 0.1, True)
@@ -905,17 +905,11 @@ class Attention(nn.Module):
     def forward(self, sequence_output, meta_data, targets=None):
         meta = self.meta_dense(meta_data)
 
-        #x = torch.mul(meta[...,None], sequence_output)
-        #print(meta.shape)
-        #print(sequence_output.shape)
-        x = meta[:,None,:] * sequence_output
-        #print(x.shape)
         
-        #outputs = self.decode(x)
-        #sequence_output, pooled_output = outputs[:2]
-        #X_tmp = x.unsqueeze(2).repeat(1, 29, 1)
+        x = meta[:,None,:] * sequence_output
+        
         batch_size, seq_len, hidden = x.shape
-        #print(hidden)
+        
 
         sequence, pooled_out = self.G(x)
 
@@ -924,22 +918,9 @@ class Attention(nn.Module):
 
         
         rnn_output = sequence
-        #print(rnn_output.shape)
-        X, attn_weights = self.attn(rnn_output, final_hidden_state)
-        #print(X.shape)
-        #y = self.output_layer(sequence)
-        #print(y.shape)
-        #print(sequence.shape)
-        #y = self.pooler(pooled_out[1])
-        #y = pooled_out[0].squeeze()
-        #print(y.shape)
-        #print(sequence.shape)
-        #print(sequence.shape)
-        #print(pooled_out[0].squeeze().shape)
-        #y = torch.repeat_interleave(x, 29, 2)
         
-        #print(X_tmp.shape)
-
+        X, attn_weights = self.attn(rnn_output, final_hidden_state)
+        
         value_pred = self.value_prediction(X)
         outputs = (value_pred,)
 
@@ -950,9 +931,9 @@ class Attention(nn.Module):
             value_pred_loss = loss_fct(targets, value_pred)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
- """
 
-class ValuePredictionHeadPrositFragmentation(nn.Module):
+
+""" class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
         self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
@@ -967,7 +948,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
             
             value_pred_loss = loss_fct(targets, value_pred)
             outputs = (value_pred_loss,) + outputs
-        return outputs  # (loss), value_prediction
+        return outputs  # (loss), value_prediction """
 
 class SequenceClassificationHead(nn.Module):
     def __init__(self, hidden_size: int, num_labels: int):

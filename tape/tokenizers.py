@@ -31,7 +31,7 @@ IUPAC_CODES = OrderedDict([
     ('Tyr', 'Y'),
     ('Glx', 'Z')])
 
-IUPAC_VOCAB = OrderedDict([
+""" IUPAC_VOCAB = OrderedDict([
     ("<pad>", 0),
     ("<mask>", 1),
     ("<cls>", 2),
@@ -67,7 +67,39 @@ IUPAC_VOCAB = OrderedDict([
     ("2", 32),
     ("3", 33),
     ("4", 34),
-    ("5", 35)])
+    ("5", 35)]) """
+
+IUPAC_VOCAB = OrderedDict([
+    ("<pad>", 0),
+    ("<mask>", 1),
+    ("<cls>", 2),
+    ("<sep>", 3),
+    ("<unk>", 4),
+    ("A", 5),
+    ("B", 6),
+    ("C", 7),
+    ("D", 8),
+    ("E", 9),
+    ("F", 10),
+    ("G", 11),
+    ("H", 12),
+    ("I", 13),
+    ("K", 14),
+    ("L", 15),
+    ("M", 16),
+    ("N", 17),
+    ("O", 18),
+    ("P", 19),
+    ("Q", 20),
+    ("R", 21),
+    ("S", 22),
+    ("T", 23),
+    ("U", 24),
+    ("V", 25),
+    ("W", 26),
+    ("X", 27),
+    ("Y", 28),
+    ("Z", 29))])
 
 UNIREP_VOCAB = OrderedDict([
     ("<pad>", 0),
