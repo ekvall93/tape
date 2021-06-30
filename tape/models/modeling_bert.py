@@ -579,7 +579,7 @@ class ProteinBertForContactPrediction(ProteinBertAbstractModel):
         # (loss), prediction_scores, (hidden_states), (attentions)
         return outputs
 
-@registry.register_task_model('prosit_fragmentation_cid', 'transformer')
+""" @registry.register_task_model('prosit_fragmentation_cid', 'transformer')
 @registry.register_task_model('prosit_fragmentation_hcd', 'transformer')
 class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
 
@@ -606,10 +606,10 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         
         outputs = self.predict(sequence_output, meta_data, targets) + outputs[2:]
 
-        return outputs
+        return outputs """
 
 
-""" @registry.register_task_model('prosit_fragmentation_cid', 'transformer')
+@registry.register_task_model('prosit_fragmentation_cid', 'transformer')
 @registry.register_task_model('prosit_fragmentation_hcd', 'transformer')
 class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
 
@@ -618,7 +618,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         self.bert = ProteinBertModel(config)
         #Hardcode extra dim and output for now
-        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size + 7, 174, config.final_layer_dropout_prob)
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
 
         self.init_weights()
 
@@ -629,9 +629,9 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         sequence_output, pooled_output = outputs[:2]
 
-        x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
+        #x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
 
         
-        outputs = self.predict(x, targets) + outputs[2:]
+        outputs = self.predict(pooled_output, targets) + outputs[2:]
 
-        return outputs """
+        return outputs

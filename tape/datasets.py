@@ -676,13 +676,13 @@ class PrositFragmentationDatasetCID(Dataset):
 
         item = self.data[index]
 
-        """ if item["collision_energy_aligned_normed"] != np.array(0.35, dtype=np.float32):
+        if item["collision_energy_aligned_normed"] != np.array(0.35, dtype=np.float32):
             print(item["collision_energy_aligned_normed"])
 
         itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
 
-        token_ids = self.tokenizer.encode(str(itemindex) + item['sequence_integer']) """
-        token_ids = self.tokenizer.encode(item['sequence_integer'])
+        token_ids = self.tokenizer.encode(str(itemindex) + item['sequence_integer'])
+        """ token_ids = self.tokenizer.encode(item['sequence_integer']) """
         
         input_mask = np.ones_like(token_ids)
         return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
