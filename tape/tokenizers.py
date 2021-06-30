@@ -99,7 +99,7 @@ IUPAC_VOCAB = OrderedDict([
     ("W", 26),
     ("X", 27),
     ("Y", 28),
-    ("Z", 29))])
+    ("Z", 29)])
 
 UNIREP_VOCAB = OrderedDict([
     ("<pad>", 0),
