@@ -69,6 +69,10 @@ IUPAC_VOCAB = OrderedDict([
     ("4", 34),
     ("5", 35)])
 
+d2 = OrderedDict([(str(np.round(i,2)), e + start_ix) for e, i in enumerate(np.linspace(0,1,101))])
+IUPAC_VOCAB = IUPAC_VOCAB.copy()
+IUPAC_VOCAB.update(d2)
+
 """ IUPAC_VOCAB = OrderedDict([
     ("<pad>", 0),
     ("<mask>", 1),
@@ -201,8 +205,15 @@ class TAPETokenizer():
         sep_token = [self.stop_token]
         return cls_token + token_ids + sep_token
 
-    def encode(self, text: str) -> np.ndarray:
+    def encode(self, text: str, collision_energy_aligned_normed=None, precursor_charge_onehot=None) -> np.ndarray:
         tokens = self.tokenize(text)
+
+        if precursor_charge_onehot:
+            tokens = [str(precursor_charge_onehot)] + tokens
+            
+        if collision_energy_aligned_normed:
+            tokens = [str(collision_energy_aligned_normed)] + tokens
+        
         tokens = self.add_special_tokens(tokens)
         token_ids = self.convert_tokens_to_ids(tokens)
         return np.array(token_ids, np.int64)
