@@ -730,14 +730,14 @@ class PrositFragmentationDatasetHCD(Dataset):
         token_ids = self.tokenizer.encode(item['sequence_integer'])
         input_mask = np.ones_like(token_ids)
         return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"] """
-        
+
     def __getitem__(self, index: int):
 
         item = self.data[index]
 
         itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
 
-        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=item["collision_energy_aligned_normed"],precursor_charge_onehot=itemindex)
+        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=np.round(item["collision_energy_aligned_normed"],2) ,precursor_charge_onehot=itemindex)
         
         
         input_mask = np.ones_like(token_ids)
