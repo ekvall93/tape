@@ -69,6 +69,8 @@ IUPAC_VOCAB = OrderedDict([
     ("4", 34),
     ("5", 35)])
 
+start_ix = len(IUPAC_VOCAB)
+
 d2 = OrderedDict([(str(np.round(i,2)), e + start_ix) for e, i in enumerate(np.linspace(0,1,101))])
 IUPAC_VOCAB = IUPAC_VOCAB.copy()
 IUPAC_VOCAB.update(d2)
@@ -210,7 +212,7 @@ class TAPETokenizer():
 
         if precursor_charge_onehot:
             tokens = [str(precursor_charge_onehot)] + tokens
-            
+
         if collision_energy_aligned_normed:
             tokens = [str(collision_energy_aligned_normed)] + tokens
         
