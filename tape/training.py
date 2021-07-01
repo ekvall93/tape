@@ -366,7 +366,8 @@ def _get_outputs_to_save(batch, outputs):
 
 def run_eval_epoch(eval_loader: DataLoader,
                    runner: ForwardRunner,
-                   is_master: bool = True) -> typing.List[typing.Dict[str, typing.Any]]:
+                   is_master: bool = True,
+                   task: typing.Union[None, str] = None) -> typing.List[typing.Dict[str, typing.Any]]:
     torch.set_grad_enabled(False)
     runner.eval()
 
@@ -377,8 +378,15 @@ def run_eval_epoch(eval_loader: DataLoader,
         loss, metrics, outputs = runner.forward(batch, return_outputs=True)  # type: ignore
         predictions = outputs[1].cpu().numpy()
         targets = batch['targets'].cpu().numpy()
-        for pred, target in zip(predictions, targets):
-            save_outputs.append({'prediction': pred, 'target': target})
+
+        if task == "prosit_fragmentation_cid" or task == "prosit_fragmentation_hcd": 
+            sequence_integer = batch['input_ids'].cpu().numpy()
+            charges = batch['charge'].cpu().numpy()
+            for pred, target, sequence, charge in zip(predictions, targets, sequence_integer, charges):
+                save_outputs.append({'prediction': pred, 'target': target, 'sequence': sequence, 'charge' : charge})
+        else:
+            for pred, target in zip(predictions, targets):
+                save_outputs.append({'prediction': pred, 'target': target})
 
     return save_outputs
 
@@ -577,12 +585,18 @@ def run_eval(model_type: str,
         1, num_workers)
 
     metric_functions = [registry.get_metric(name) for name in metrics]
-    save_outputs = run_eval_epoch(valid_loader, runner, is_master)
+    save_outputs = run_eval_epoch(valid_loader, runner, is_master, task)
     target = [el['target'] for el in save_outputs]
     prediction = [el['prediction'] for el in save_outputs]
 
-    metrics_to_save = {name: metric(target, prediction)
-                       for name, metric in zip(metrics, metric_functions)}
+    if task == "prosit_fragmentation_cid" or task == "prosit_fragmentation_hcd":
+        sequence = [el['sequence'] for el in save_outputs]
+        charge = [el['charge'] for el in save_outputs]
+        metrics_to_save = {name: metric(target, prediction, sequence, charge)
+                           for name, metric in zip(metrics, metric_functions)}
+    else:
+        metrics_to_save = {name: metric(target, prediction)
+                           for name, metric in zip(metrics, metric_functions)}
     logger.info(''.join(f'{name}: {val}' for name, val in metrics_to_save.items()))
 
     with (pretrained_dir / 'results.pkl').open('wb') as f:
