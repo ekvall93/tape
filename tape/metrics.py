@@ -71,7 +71,7 @@ def spectral_angle(target: Sequence[float],
         return spectral_distance
 
     
-    sequence_lengths = [np.count_nonzero(s) - 3 for s in sequence]
+    sequence_lengths = [np.count_nonzero(s) - 4 for s in sequence]
     #print(sequence_lengths)
     intensities = np.array(prediction)
     intensities_raw = np.array(target)
@@ -88,7 +88,7 @@ def spectral_angle(target: Sequence[float],
 
     spectral_angle = 1 - masked_spectral_distance(intensities_raw, intensities)
     spectral_angle = np.nan_to_num(spectral_angle)
-    return np.nanmedian(spectral_angle)
+    return np.median(spectral_angle)
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
