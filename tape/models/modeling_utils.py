@@ -936,10 +936,16 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.value_prediction = SimpleMLP(2 * hidden_size, 512, out, dropout, True)
+        self.meta_dense = SimpleLinear(7, hidden_size, dropout, False)
 
-    def forward(self, pooled_output, targets=None):
-        value_pred = self.value_prediction(pooled_output)
+    def forward(self, pooled_output, meta_data, targets=None):
+
+        meta = self.meta_dense(meta_data)
+
+        x = torch.cat((pooled_output, meta), dim=1)
+        #print(x.shape)
+        value_pred = self.value_prediction(x)
         outputs = (value_pred,)
 
         

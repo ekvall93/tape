@@ -725,13 +725,13 @@ class PrositFragmentationDatasetHCD(Dataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    """ def __getitem__(self, index: int):
+    def __getitem__(self, index: int):
         item = self.data[index]
         token_ids = self.tokenizer.encode(item['sequence_integer'])
         input_mask = np.ones_like(token_ids)
-        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"] """
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
 
-    def __getitem__(self, index: int):
+    """ def __getitem__(self, index: int):
 
         item = self.data[index]
 
@@ -741,7 +741,7 @@ class PrositFragmentationDatasetHCD(Dataset):
         
         
         input_mask = np.ones_like(token_ids)
-        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"] """
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))

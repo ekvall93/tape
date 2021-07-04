@@ -629,9 +629,9 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         sequence_output, pooled_output = outputs[:2]
 
-        #x = torch.cat((pooled_output, charge, collision_energy[:,None]), dim=1)
+        meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
 
         
-        outputs = self.predict(pooled_output, targets) + outputs[2:]
+        outputs = self.predict(pooled_output, meta_data, targets) + outputs[2:]
 
         return outputs
