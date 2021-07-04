@@ -70,9 +70,8 @@ def spectral_angle(target: Sequence[float],
 
         return spectral_distance
 
-    for s in sequence:
-        print(s)
-    sequence_lengths = [np.count_nonzero(s) - 2 for s in sequence]
+    
+    sequence_lengths = [np.count_nonzero(s) - 3 for s in sequence]
     #print(sequence_lengths)
     intensities = np.array(prediction)
     intensities_raw = np.array(target)
