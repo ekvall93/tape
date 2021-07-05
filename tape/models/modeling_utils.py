@@ -748,13 +748,14 @@ class SimpleLinear(nn.Module):
         super().__init__()
         if useLeakyRelu:
             activation = nn.LeakyReLU(0.3)
+            self.main = nn.Sequential(
+                weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
+                activation,
+                nn.Dropout(dropout, inplace=True))
         else:
-            activation = nn.ReLU()
-
-        self.main = nn.Sequential(
-            weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            activation,
-            nn.Dropout(dropout, inplace=True))
+            self.main = nn.Sequential(
+                weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
+                nn.Dropout(dropout, inplace=True))
 
     def forward(self, x):
         return self.main(x)
