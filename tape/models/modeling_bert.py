@@ -640,6 +640,53 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
 
         extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
+
+        extended_attention_mask = extended_attention_mask.to(
+            dtype=next(self.parameters()).dtype)  # fp16 compatibility
+        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+
+        meta = self.meta_dense(meta_data)
+
+        x = meta[:,None,:] * sequence_output
+
+        x = self.layer(x, extended_attention_mask)[0]
+
+        pooled_output = self.pooler(x)
+
+        
+        outputs = self.predict(pooled_output, targets) + outputs[2:]
+
+        return outputs
+
+
+@registry.register_task_model('prosit_fragmentation_cid_charge_emb', 'transformer')
+@registry.register_task_model('prosit_fragmentation_hcd_charge_emb', 'transformer')
+class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.bert = ProteinBertModel(config)
+        #Hardcode extra dim and output for now
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
+
+        self.init_weights()
+
+        self.meta_dense = SimpleLinear(1, config.hidden_size, config.final_layer_dropout_prob, False)
+        self.layer = ProteinBertLayer(config) 
+        self.pooler = ProteinBertPooler(config)
+
+
+    def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
+
+        outputs = self.bert(input_ids, input_mask=input_mask)
+
+        sequence_output, pooled_output = outputs[:2]
+
+        #meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
+        meta_data = collision_energy[:,None]
+
+        extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
         
         extended_attention_mask = extended_attention_mask.to(
             dtype=next(self.parameters()).dtype)  # fp16 compatibility
@@ -652,6 +699,52 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         x = self.layer(x, extended_attention_mask)[0]
 
         pooled_output = self.pooler(x)
+
+        
+        outputs = self.predict(pooled_output, targets) + outputs[2:]
+
+        return outputs
+
+@registry.register_task_model('prosit_fragmentation_cid_full_emb', 'transformer')
+@registry.register_task_model('prosit_fragmentation_hcd_full_emb', 'transformer')
+class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
+
+    def __init__(self, config):
+        super().__init__(config)
+
+        self.bert = ProteinBertModel(config)
+        #Hardcode extra dim and output for now
+        self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
+
+        self.init_weights()
+
+        self.meta_dense = SimpleLinear(1, config.hidden_size, config.final_layer_dropout_prob, False)
+        self.layer = ProteinBertLayer(config) 
+        self.pooler = ProteinBertPooler(config)
+
+
+    def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
+
+        outputs = self.bert(input_ids, input_mask=input_mask)
+
+        sequence_output, pooled_output = outputs[:2]
+
+        #meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
+        #meta_data = collision_energy[:,None]
+
+        #extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
+        
+        #extended_attention_mask = extended_attention_mask.to(
+        #    dtype=next(self.parameters()).dtype)  # fp16 compatibility
+        #extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+
+        #meta = self.meta_dense(meta_data)
+
+        #x = meta[:,None,:] * sequence_output
+
+        #x = self.layer(x, extended_attention_mask)[0]
+
+        #pooled_output = self.pooler(x)
 
         
         outputs = self.predict(pooled_output, targets) + outputs[2:]

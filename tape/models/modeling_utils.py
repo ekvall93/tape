@@ -941,9 +941,6 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         
 
     def forward(self, pooled_output, targets=None):
-
-        
-        #print(x.shape)
         value_pred = self.value_prediction(pooled_output)
         outputs = (value_pred,)
 

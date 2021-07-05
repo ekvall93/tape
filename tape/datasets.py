@@ -760,6 +760,222 @@ class PrositFragmentationDatasetHCD(Dataset):
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
 
+@registry.register_task('prosit_fragmentation_hcd_charge_emb')
+class PrositFragmentationDatasetHCD(Dataset):
+
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'valid', 'test'):
+            raise ValueError(f"Unrecognized split: {split}. "
+                             f"Must be one of ['train', 'valid', 'test']")
+        if isinstance(tokenizer, str):
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        data_path = Path(data_path)
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    
+
+    def __getitem__(self, index: int):
+
+        item = self.data[index]
+
+        itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
+
+        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=None ,precursor_charge_onehot=itemindex)
+        
+        
+        input_mask = np.ones_like(token_ids)
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+
+        collision_energy = np.stack(collision_energy)
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
+
+        collision_energy_tensor = torch.FloatTensor(collision_energy)
+        charge_tensor = torch.FloatTensor(charge)
+
+        return {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': intensities_raw_true_value,
+                'collision_energy': collision_energy_tensor,
+                'charge': charge_tensor}
+
+@registry.register_task('prosit_fragmentation_cid_charge_emb')
+class PrositFragmentationDatasetHCD(Dataset):
+
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'valid', 'test'):
+            raise ValueError(f"Unrecognized split: {split}. "
+                             f"Must be one of ['train', 'valid', 'test']")
+        if isinstance(tokenizer, str):
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        data_path = Path(data_path)
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    
+
+    def __getitem__(self, index: int):
+
+        item = self.data[index]
+
+        itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
+
+        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=None ,precursor_charge_onehot=itemindex)
+        
+        
+        input_mask = np.ones_like(token_ids)
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+
+        collision_energy = np.stack(collision_energy)
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
+
+        collision_energy_tensor = torch.FloatTensor(collision_energy)
+        charge_tensor = torch.FloatTensor(charge)
+
+        return {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': intensities_raw_true_value,
+                'collision_energy': collision_energy_tensor,
+                'charge': charge_tensor}
+
+@registry.register_task('prosit_fragmentation_hcd_full_emb')
+class PrositFragmentationDatasetHCD(Dataset):
+
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'valid', 'test'):
+            raise ValueError(f"Unrecognized split: {split}. "
+                             f"Must be one of ['train', 'valid', 'test']")
+        if isinstance(tokenizer, str):
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        data_path = Path(data_path)
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    
+
+    def __getitem__(self, index: int):
+
+        item = self.data[index]
+
+        itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
+
+        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=np.round(item["collision_energy_aligned_normed"],2) ,precursor_charge_onehot=itemindex)
+        
+        
+        input_mask = np.ones_like(token_ids)
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+
+        collision_energy = np.stack(collision_energy)
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
+
+        collision_energy_tensor = torch.FloatTensor(collision_energy)
+        charge_tensor = torch.FloatTensor(charge)
+
+        return {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': intensities_raw_true_value,
+                'collision_energy': collision_energy_tensor,
+                'charge': charge_tensor}
+
+@registry.register_task('prosit_fragmentation_cid_full_emb')
+class PrositFragmentationDatasetHCD(Dataset):
+
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'valid', 'test'):
+            raise ValueError(f"Unrecognized split: {split}. "
+                             f"Must be one of ['train', 'valid', 'test']")
+        if isinstance(tokenizer, str):
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        data_path = Path(data_path)
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    
+
+    def __getitem__(self, index: int):
+
+        item = self.data[index]
+
+        itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
+
+        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=np.round(item["collision_energy_aligned_normed"],2) ,precursor_charge_onehot=itemindex)
+        
+        
+        input_mask = np.ones_like(token_ids)
+        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+
+        collision_energy = np.stack(collision_energy)
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        intensities_raw_true_value = torch.FloatTensor(intensities_raw_true_value)  # type: ignore
+
+        collision_energy_tensor = torch.FloatTensor(collision_energy)
+        charge_tensor = torch.FloatTensor(charge)
+
+        return {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': intensities_raw_true_value,
+                'collision_energy': collision_energy_tensor,
+                'charge': charge_tensor}
+
 @registry.register_task('trrosetta')
 class TRRosettaDataset(Dataset):
 

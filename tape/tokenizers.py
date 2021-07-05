@@ -61,13 +61,22 @@ IUPAC_VOCAB = OrderedDict([
     ("W", 26),
     ("X", 27),
     ("Y", 28),
-    ("Z", 29)])
+    ("Z", 29),
 
-""" start_ix = len(IUPAC_VOCAB)
+    ("0", 30),
+    ("1", 31),
+    ("2", 32),
+    ("3", 33),
+    ("4", 34),
+    ("5", 35),
+    ("6", 36),
+    ])
+
+start_ix = len(IUPAC_VOCAB)
 
 d2 = OrderedDict([(str(np.round(i,2)), e + start_ix) for e, i in enumerate(np.linspace(0,1,101))])
 IUPAC_VOCAB = IUPAC_VOCAB.copy()
-IUPAC_VOCAB.update(d2) """
+IUPAC_VOCAB.update(d2)
 
 """ IUPAC_VOCAB = OrderedDict([
     ("<pad>", 0),
