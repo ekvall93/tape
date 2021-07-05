@@ -34,6 +34,7 @@ from .file_utils import cached_path
 
 from .losses import masked_spectral_distance
 
+
 #from .modeling_lstm import ProteinLSTMModelProsit, ProteinLSTMConfig
 CONFIG_NAME = "config.json"
 WEIGHTS_NAME = "pytorch_model.bin"
@@ -934,18 +935,16 @@ class Attention(nn.Module):
 
 
 class ValuePredictionHeadPrositFragmentation(nn.Module):
-    def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
+    def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(2 * hidden_size, 512, out, dropout, True)
-        self.meta_dense = SimpleLinear(7, hidden_size, dropout, False)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        
 
-    def forward(self, pooled_output, meta_data, targets=None):
+    def forward(self, pooled_output, targets=None):
 
-        meta = self.meta_dense(meta_data)
-
-        x = torch.cat((pooled_output, meta), dim=1)
+        
         #print(x.shape)
-        value_pred = self.value_prediction(x)
+        value_pred = self.value_prediction(pooled_output)
         outputs = (value_pred,)
 
         

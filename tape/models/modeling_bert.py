@@ -35,9 +35,11 @@ from .modeling_utils import ValuePredictionHead
 from .modeling_utils import SequenceClassificationHead
 from .modeling_utils import SequenceToSequenceClassificationHead
 from .modeling_utils import PairwiseContactPredictionHead
+
 from ..registry import registry
 
 from .modeling_utils import ValuePredictionHeadPrositFragmentation
+from .modeling_utils import SimpleLinear
 
 logger = logging.getLogger(__name__)
 
@@ -506,6 +508,8 @@ class ProteinBertForValuePrediction(ProteinBertAbstractModel):
 
     def forward(self, input_ids, input_mask=None, targets=None):
 
+        extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
+
         outputs = self.bert(input_ids, input_mask=input_mask)
 
         sequence_output, pooled_output = outputs[:2]
@@ -622,6 +626,10 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         self.init_weights()
 
+        self.meta_dense = SimpleLinear(7, config.hidden_size, config.final_layer_dropout_prob, False)
+        self.layer = ProteinBertLayer(config) 
+        self.pooler = ProteinBertPooler(config)
+
 
     def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
 
@@ -631,7 +639,21 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
 
         meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
 
+        extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
         
-        outputs = self.predict(pooled_output, meta_data, targets) + outputs[2:]
+        extended_attention_mask = extended_attention_mask.to(
+            dtype=next(self.parameters()).dtype)  # fp16 compatibility
+        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+
+        meta = self.meta_dense(meta_data)
+
+        x = meta[:,None,:] * sequence_output
+
+        x = self.layer(x, extended_attention_mask)[0]
+
+        pooled_output = self.pooler(x)
+
+        
+        outputs = self.predict(pooled_output, targets) + outputs[2:]
 
         return outputs
