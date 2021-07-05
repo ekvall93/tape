@@ -94,21 +94,21 @@ def spectral_angle(target: Sequence[float],
                        prediction: Sequence[float],
                        sequence: Sequence[int],
                        charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, 2)
+    return spectral_angle_calc(target, prediction, sequence, charge,2)
 
 @registry.register_metric('spectral_angle_charge')
 def spectral_angle(target: Sequence[float],
                        prediction: Sequence[float],
                        sequence: Sequence[int],
                        charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, 3)
+    return spectral_angle_calc(target, prediction, sequence, charge, 3)
 
 @registry.register_metric('spectral_angle_full')
 def spectral_angle(target: Sequence[float],
                        prediction: Sequence[float],
                        sequence: Sequence[int],
                        charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, 4)
+    return spectral_angle_calc(target, prediction, sequence, charge, 4)
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
