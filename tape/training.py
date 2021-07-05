@@ -589,7 +589,7 @@ def run_eval(model_type: str,
     target = [el['target'] for el in save_outputs]
     prediction = [el['prediction'] for el in save_outputs]
 
-    if task == "prosit_fragmentation_cid" or task == "prosit_fragmentation_hcd":
+    if "prosit_fragmentation_cid" in task or "prosit_fragmentation_hcd" in task:
         sequence = [el['sequence'] for el in save_outputs]
         charge = [el['charge'] for el in save_outputs]
         metrics_to_save = {name: metric(target, prediction, sequence, charge)
