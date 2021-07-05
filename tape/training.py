@@ -379,7 +379,7 @@ def run_eval_epoch(eval_loader: DataLoader,
         predictions = outputs[1].cpu().numpy()
         targets = batch['targets'].cpu().numpy()
 
-        if task == "prosit_fragmentation_cid" or task == "prosit_fragmentation_hcd": 
+        if "prosit_fragmentation_cid" in task or "prosit_fragmentation_hcd" in task: 
             sequence_integer = batch['input_ids'].cpu().numpy()
             charges = batch['charge'].cpu().numpy()
             for pred, target, sequence, charge in zip(predictions, targets, sequence_integer, charges):
