@@ -749,8 +749,9 @@ class PrositFragmentationDatasetHCD(Dataset):
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
 
+
 @registry.register_task('prosit_fragmentation_vanilla_attention_maximus_cid')
-class PrositFragmentationDatasetCID(Dataset):
+class PrositFragmentationDatasetHCD(Dataset):
 
     def __init__(self,
                  data_path: Union[str, Path],
@@ -766,23 +767,18 @@ class PrositFragmentationDatasetCID(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_fragmentation_cid/prosit_fragmentation_cid_{split}.lmdb'
+        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
 
     def __len__(self) -> int:
         return len(self.data)
 
     def __getitem__(self, index: int):
-
         item = self.data[index]
-
-        itemindex = np.where(item["precursor_charge_onehot"]==1)[0][0]
-
-        token_ids = self.tokenizer.encode(item['sequence_integer'], collision_energy_aligned_normed=item["collision_energy_aligned_normed"],precursor_charge_onehot=itemindex)
-        
-        
+        token_ids = self.tokenizer.encode(item['sequence_integer'])
         input_mask = np.ones_like(token_ids)
         return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
+
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
@@ -800,7 +796,6 @@ class PrositFragmentationDatasetCID(Dataset):
                 'targets': intensities_raw_true_value,
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
-
 
 @registry.register_task('prosit_fragmentation_vanilla_attention_maximus_hcd')
 class PrositFragmentationDatasetHCD(Dataset):
