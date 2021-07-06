@@ -767,7 +767,7 @@ class PrositFragmentationDatasetHCD(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        data_file = f'prosit_fragmentation_cid/prosit_fragmentation_cid_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
 
     def __len__(self) -> int:
@@ -1123,7 +1123,7 @@ class PrositFragmentationDatasetHCD(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
+        data_file = f'prosit_fragmentation_cid/prosit_fragmentation_cid_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
 
     def __len__(self) -> int:
