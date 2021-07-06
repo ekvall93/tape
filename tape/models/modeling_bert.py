@@ -625,10 +625,14 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
 
         self.init_weights()
-        tmp_config = config
-        tmp_config.num_hidden_layers = 3
         self.meta_dense = SimpleLinear(7, config.hidden_size, config.final_layer_dropout_prob, False)
-        self.layer = ProteinBertEncoder(tmp_config) 
+
+        """ tmp_config = config
+        tmp_config.num_hidden_layers = 3
+        self.layer = ProteinBertEncoder(tmp_config)  """
+        #self.layer = ProteinBertEncoder(tmp_config)
+        self.layer = ProteinBertLayer(config) 
+
         self.pooler = ProteinBertPooler(config)
 
 
