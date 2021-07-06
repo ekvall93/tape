@@ -379,7 +379,7 @@ def run_eval_epoch(eval_loader: DataLoader,
         predictions = outputs[1].cpu().numpy()
         targets = batch['targets'].cpu().numpy()
 
-        if "prosit_fragmentation_cid" in task or "prosit_fragmentation_hcd" in task: 
+        if "prosit_fragmentation" in task: 
             sequence_integer = batch['input_ids'].cpu().numpy()
             charges = batch['charge'].cpu().numpy()
             for pred, target, sequence, charge in zip(predictions, targets, sequence_integer, charges):
@@ -589,7 +589,7 @@ def run_eval(model_type: str,
     target = [el['target'] for el in save_outputs]
     prediction = [el['prediction'] for el in save_outputs]
 
-    if "prosit_fragmentation_cid" in task or "prosit_fragmentation_hcd" in task:
+    if "prosit_fragmentation" in task:
         sequence = [el['sequence'] for el in save_outputs]
         charge = [el['charge'] for el in save_outputs]
         metrics_to_save = {name: metric(target, prediction, sequence, charge)
