@@ -722,7 +722,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         self.init_weights()
         self.meta_dense = SimpleLinear(7, config.hidden_size, config.final_layer_dropout_prob, False)
 
-        tmp_config = type('tmp_config', (object,), dict(vars(config), num_hidden_layers=8))
+        tmp_config = type('tmp_config', (object,), dict(vars(config), num_hidden_layers=9))
 
         self.layer = ProteinBertEncoder(tmp_config) 
 
