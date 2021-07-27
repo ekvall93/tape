@@ -837,7 +837,7 @@ class PrositFragmentationDatasetHCD(Dataset):
         item = self.data[index]
         token_ids = self.tokenizer.encode(item['peptide_sequence'])
         input_mask = np.ones_like(token_ids)
-        return (token_ids, input_mask) + (item[i] for i in self.keys)
+        return (token_ids, input_mask) + tuple(item[i] for i in self.keys)
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         #input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
