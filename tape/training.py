@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import inspect
 import pickle as pkl
+import pandas as pd
 
 from tqdm import tqdm
 import torch
@@ -380,11 +381,36 @@ def run_eval_epoch(eval_loader: DataLoader,
         targets = batch['targets'].cpu().numpy()
 
         if "prosit_fragmentation" in task: 
-            sequence_integer = batch['input_ids'].cpu().numpy()
-            charges = batch['charge'].cpu().numpy()
-            collision_energy = batch['energy'].cpu().numpy()
-            for pred, target, sequence, charge, collision_energy in zip(predictions, targets, sequence_integer, charges, collision_energy):
-                save_outputs.append({'prediction': pred, 'target': target, 'sequence': sequence, 'charge' : charge, 'collision_energy': collision_energy})
+            keys = ['collision_energy',
+            'collision_energy_aligned_normed',
+            'collision_energy_normed',
+            'intensities_raw',
+            'masses_raw',
+            'method',
+            'precursor_charge_onehot',
+            'rawfile',
+            'reverse',
+            'scan_number',
+            'score',
+            'sequence_integer']
+
+            output = dict()
+            output["prediction"] = predictions
+            output["target"] = targets
+            output["sequence"] = batch['input_ids'].cpu().numpy()
+            output["charge"] = batch['charge'].cpu().numpy()
+            output["energy"] = batch['energy'].cpu().numpy()
+            
+            for k in keys:
+                output[k] = batch[k]
+            df = pd.DataFrame(output)
+
+            for k, row in df.iterrows():
+                save_outputs.append(dict(row))
+
+
+            #for pred, target, sequence, charge, energy in zip(predictions, targets, sequence_integer, charges, energy):
+            #    save_outputs.append({'prediction': pred, 'target': target, 'sequence': sequence, 'charge' : charge, 'energy': energy})
         else:
             for pred, target in zip(predictions, targets):
                 save_outputs.append({'prediction': pred, 'target': target})
