@@ -382,7 +382,7 @@ def run_eval_epoch(eval_loader: DataLoader,
         if "prosit_fragmentation" in task: 
             sequence_integer = batch['input_ids'].cpu().numpy()
             charges = batch['charge'].cpu().numpy()
-            collision_energy = batch['collision_energy'].cpu().numpy()
+            collision_energy = batch['energy'].cpu().numpy()
             for pred, target, sequence, charge, collision_energy in zip(predictions, targets, sequence_integer, charges, collision_energy):
                 save_outputs.append({'prediction': pred, 'target': target, 'sequence': sequence, 'charge' : charge, 'collision_energy': collision_energy})
         else:
