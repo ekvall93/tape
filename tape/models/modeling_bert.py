@@ -613,7 +613,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         return outputs """
 
 
-@registry.register_task_model('prosit_fragmentation_vanilla_cid', 'transformer')
+""" @registry.register_task_model('prosit_fragmentation_vanilla_cid', 'transformer')
 @registry.register_task_model('prosit_fragmentation_vanilla_hcd', 'transformer')
 class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
 
@@ -706,7 +706,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         
         outputs = self.predict(pooled_output, targets) + outputs[2:]
 
-        return outputs
+        return outputs """
 
 @registry.register_task_model('prosit_fragmentation_vanilla_attention_maximus_cid', 'transformer')
 @registry.register_task_model('prosit_fragmentation_vanilla_attention_maximus_hcd', 'transformer')
@@ -757,7 +757,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         return outputs
 
 
-@registry.register_task_model('prosit_fragmentation_cid_charge_emb', 'transformer')
+""" @registry.register_task_model('prosit_fragmentation_cid_charge_emb', 'transformer')
 @registry.register_task_model('prosit_fragmentation_hcd_charge_emb', 'transformer')
 class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel):
 
@@ -849,3 +849,4 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         outputs = self.predict(pooled_output, targets) + outputs[2:]
 
         return outputs
+ """
