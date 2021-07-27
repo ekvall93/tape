@@ -816,19 +816,56 @@ class PrositFragmentationDatasetHCD(Dataset):
         data_path = Path(data_path)
         data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
+        self.keys = ['collision_energy',
+            'collision_energy_aligned_normed',
+            'collision_energy_normed',
+            'intensities_raw',
+            'masses_raw',
+            'method',
+            'precursor_charge_onehot',
+            'rawfile',
+            'reverse',
+            'scan_number',
+            'score',
+            'sequence_integer']
+        
 
     def __len__(self) -> int:
         return len(self.data)
 
     def __getitem__(self, index: int):
         item = self.data[index]
-        token_ids = self.tokenizer.encode(item['sequence_integer'])
+        token_ids = self.tokenizer.encode(item['peptide_sequence'])
         input_mask = np.ones_like(token_ids)
-        return token_ids, input_mask, item['intensities_raw'], item["collision_energy_aligned_normed"], item["precursor_charge_onehot"]
-
+        return (token_ids, input_mask) + (item[i] for i in self.keys)
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
-        input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+        #input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+        t = tuple(zip(*batch))
+        data = {for k, v in zip(["input_ids", "input_mask"] + self.keys,t)}
+
+        collision_energy = np.stack(data["collision_energy_aligned_normed"])
+        input_ids = torch.from_numpy(pad_sequences(data["input_ids"], 0))
+        input_mask = torch.from_numpy(pad_sequences(data["input_mask"], 0))
+        intensities_raw_true_value = torch.FloatTensor(data["intensities_raw"])  # type: ignore
+
+        collision_energy_tensor = torch.FloatTensor(collision_energy)
+        charge_tensor = torch.FloatTensor(data["precursor_charge_onehot"])
+
+        inputs = {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': intensities_raw_true_value,
+                'energy': collision_energy_tensor,
+                'charge': charge_tensor}
+        for k in self.keys:
+            inputs[k] = data[k]
+        
+        return inputs
+
+    """ def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        #input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
+        t = tuple(zip(*batch))
+        data = {for k, v in zip(["input_ids", "input_mask"] + self.keys,t)}
 
         collision_energy = np.stack(collision_energy)
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
@@ -842,7 +879,7 @@ class PrositFragmentationDatasetHCD(Dataset):
                 'input_mask': input_mask,
                 'targets': intensities_raw_true_value,
                 'collision_energy': collision_energy_tensor,
-                'charge': charge_tensor}
+                'charge': charge_tensor} """
                 
 @registry.register_task('prosit_fragmentation_vanilla_cid')
 class PrositFragmentationDatasetCID(Dataset):
