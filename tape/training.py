@@ -403,9 +403,17 @@ def run_eval_epoch(eval_loader: DataLoader,
             
             for k in keys:
                 output[k] = batch[k]
-            df = pd.DataFrame(output)
 
-            for k, row in df.iterrows():
+            LIST = list()
+            for i, (k, dk) in enumerate(output.items()):
+                if i == 0:
+                    for v in dk:
+                        LIST.append({k: v})
+                else:
+                    for j, v in enumerate(dk):
+                        LIST[j][k] = v
+                        
+            for row in LIST:
                 save_outputs.append(dict(row))
 
 
