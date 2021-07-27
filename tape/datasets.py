@@ -842,7 +842,7 @@ class PrositFragmentationDatasetHCD(Dataset):
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         #input_ids, input_mask, intensities_raw_true_value, collision_energy, charge = tuple(zip(*batch))
         t = tuple(zip(*batch))
-        data = {for k, v in zip(["input_ids", "input_mask"] + self.keys,t)}
+        data = {k:v for k, v in zip(["input_ids", "input_mask"] + self.keys,t)}
 
         collision_energy = np.stack(data["collision_energy_aligned_normed"])
         input_ids = torch.from_numpy(pad_sequences(data["input_ids"], 0))
