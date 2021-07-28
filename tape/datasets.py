@@ -141,7 +141,7 @@ class LMDBDataset(Dataset):
         self._env = env
         self._in_memory = in_memory
         #self._num_examples = num_examples
-        self._num_examples = ​​2839371       
+        self._num_examples = ​​2839371
 
     def __len__(self) -> int:
         return self._num_examples
