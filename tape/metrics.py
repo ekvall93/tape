@@ -87,6 +87,7 @@ def spectral_angle_calc(target: Sequence[float],
 
     spectral_angle = 1 - masked_spectral_distance(intensities_raw, intensities)
     spectral_angle = np.nan_to_num(spectral_angle)
+    print(spectral_angle)
     return np.median(spectral_angle)
 
 @registry.register_metric('spectral_angle')
