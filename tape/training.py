@@ -415,14 +415,14 @@ def run_eval_epoch(eval_loader: DataLoader,
                         LIST[j][k] = v
 
             newList = list()                        
-            for row in LIST:
+            for r in LIST:
                 intensities_raw = [r["target"]]
                 intensities_pred = [r["prediction"]]
                 sequence_integer = [r["sequence_integer"]]
                 precursor_charge_onehot = [r["charge"]]
                 sa = spectral_angle_calc(intensities_raw, intensities_pred, sequence_integer, precursor_charge_onehot)
-                row["spectral_angle"] = sa
-                newList.append(row)
+                r["spectral_angle"] = sa
+                newList.append(r)
 
 
             for row in newList:
