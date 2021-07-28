@@ -374,7 +374,6 @@ def run_eval_epoch(eval_loader: DataLoader,
     runner.eval()
 
     save_outputs = []
-
     for batch in tqdm(eval_loader, desc='Evaluation', total=len(eval_loader),
                       disable=not is_master):
         loss, metrics, outputs = runner.forward(batch, return_outputs=True)  # type: ignore
