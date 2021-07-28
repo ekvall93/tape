@@ -20,6 +20,7 @@ from . import errors
 from . import visualization
 from .registry import registry
 from .models.modeling_utils import ProteinModel
+from .metrics import spectral_angle_calc
 
 try:
     from apex import amp
@@ -412,8 +413,19 @@ def run_eval_epoch(eval_loader: DataLoader,
                 else:
                     for j, v in enumerate(dk):
                         LIST[j][k] = v
-                        
+
+            newList = list()                        
             for row in LIST:
+                intensities_raw = [r["target"]]
+                intensities_pred = [r["prediction"]]
+                sequence_integer = [r["sequence_integer"]]
+                precursor_charge_onehot = [r["charge"]]
+                sa = spectral_angle_calc(intensities_raw, intensities_pred, sequence_integer, precursor_charge_onehot)
+                row["spectral_angle"] = sa
+                newList.append(row)
+
+
+            for row in newList:
                 save_outputs.append(dict(row))
 
 
@@ -625,7 +637,7 @@ def run_eval(model_type: str,
     prediction = [el['prediction'] for el in save_outputs]
 
     if "prosit_fragmentation" in task:
-        sequence = [el['sequence'] for el in save_outputs]
+        sequence = [el['sequence_integer'] for el in save_outputs]
         charge = [el['charge'] for el in save_outputs]
         metrics_to_save = {name: metric(target, prediction, sequence, charge)
                            for name, metric in zip(metrics, metric_functions)}

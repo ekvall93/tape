@@ -67,10 +67,9 @@ def masked_spectral_distance(true, pred, epsilon = 1e-7):
 def spectral_angle_calc(target: Sequence[float],
                         prediction: Sequence[float],
                         sequence: Sequence[int],
-                        charge : Sequence[int],
-                        extra_tokens: int) -> float:
+                        charge : Sequence[int]) -> float:
 
-    sequence_lengths = [np.count_nonzero(s) - extra_tokens for s in sequence]
+    sequence_lengths = [np.count_nonzero(s) for s in sequence]
     #print(sequence_lengths)
     intensities = np.array(prediction)
     intensities_raw = np.array(target)
@@ -87,7 +86,6 @@ def spectral_angle_calc(target: Sequence[float],
 
     spectral_angle = 1 - masked_spectral_distance(intensities_raw, intensities)
     spectral_angle = np.nan_to_num(spectral_angle)
-    print(spectral_angle)
     return np.median(spectral_angle)
 
 @registry.register_metric('spectral_angle')
@@ -95,21 +93,7 @@ def spectral_angle(target: Sequence[float],
                        prediction: Sequence[float],
                        sequence: Sequence[int],
                        charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, charge,2)
-
-@registry.register_metric('spectral_angle_charge')
-def spectral_angle(target: Sequence[float],
-                       prediction: Sequence[float],
-                       sequence: Sequence[int],
-                       charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, charge, 3)
-
-@registry.register_metric('spectral_angle_full')
-def spectral_angle(target: Sequence[float],
-                       prediction: Sequence[float],
-                       sequence: Sequence[int],
-                       charge : Sequence[int]) -> float:
-    return spectral_angle_calc(target, prediction, sequence, charge, 4)
+    return spectral_angle_calc(target, prediction, sequence, charge)
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
