@@ -67,7 +67,8 @@ def masked_spectral_distance(true, pred, epsilon = 1e-7):
 def spectral_angle_calc(target: Sequence[float],
                         prediction: Sequence[float],
                         sequence: Sequence[int],
-                        charge : Sequence[int]) -> float:
+                        charge : Sequence[int],
+                        returnIntensities: bool = False) -> float:
 
     sequence_lengths = [np.count_nonzero(s) for s in sequence]
     #print(sequence_lengths)
@@ -86,7 +87,11 @@ def spectral_angle_calc(target: Sequence[float],
 
     spectral_angle = 1 - masked_spectral_distance(intensities_raw, intensities)
     spectral_angle = np.nan_to_num(spectral_angle)
-    return np.median(spectral_angle)
+    
+    if returnIntensities:
+        return np.median(spectral_angle), intensities
+    else:
+        return np.median(spectral_angle)
 
 @registry.register_metric('spectral_angle')
 def spectral_angle(target: Sequence[float],
