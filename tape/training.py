@@ -421,7 +421,7 @@ def run_eval_epoch(eval_loader: DataLoader,
                 precursor_charge_onehot = [r["charge"]]
                 sa, cleanIntensities = spectral_angle_calc(intensities_raw, intensities_pred, sequence_integer, precursor_charge_onehot, returnIntensities=True)
                 r["spectral_angle"] = sa
-                r["prediction"] = cleanIntensities
+                r["intensities_pred"] = cleanIntensities
                 newList.append(r)
 
             for row in newList:
