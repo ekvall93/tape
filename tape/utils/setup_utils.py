@@ -124,7 +124,7 @@ def setup_loader(dataset: Dataset,
         num_workers=num_workers,
         shuffle=shuffle_dataset,
         collate_fn=dataset.collate_fn,  # type: ignore
-        shuffle=False)
+        )
 
     return loader
 
