@@ -118,7 +118,7 @@ def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsil
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
     cosSim = cosineSimilarity(pred_masked, true_masked.T)
-    product_clipped = np.clip(cosSim, min=-(1-epsilon), max=(1 - epsilon))
+    product_clipped = np.clip(cosSim, -(1-epsilon), (1 - epsilon))
     arccos = np.arccos(product_clipped)
     spectral_distance = 2 * arccos / np.pi
     return np.median(spectral_distance)
