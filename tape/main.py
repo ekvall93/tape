@@ -114,6 +114,8 @@ def create_eval_parser(base_parser: argparse.ArgumentParser) -> argparse.Argumen
                         nargs='*')
     parser.add_argument('--split', default='test', type=str,
                         help='Which split to run on')
+    parser.add_argument('--shuffle_dataset', default=False, type=bool,
+                        help='Shuffle dataset to be evaluated')
     return parser
 
 
