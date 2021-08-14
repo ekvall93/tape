@@ -112,7 +112,7 @@ def setup_loader(dataset: Dataset,
                  gradient_accumulation_steps: int,
                  num_workers: int,
                  shuffle_dataset: bool = True) -> DataLoader:
-    sampler = DistributedSampler(dataset) if local_rank != -1 else RandomSampler(dataset)
+    sampler = DistributedSampler(dataset) if local_rank != -1 else RandomSampler(dataset, shuffle=False)
     batch_size = get_effective_batch_size(
         batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
     # WARNING: this will fail if the primary sequence is not the first thing the dataset returns
