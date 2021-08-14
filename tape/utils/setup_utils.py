@@ -112,19 +112,19 @@ def setup_loader(dataset: Dataset,
                  gradient_accumulation_steps: int,
                  num_workers: int,
                  shuffle_dataset: bool = True) -> DataLoader:
-    sampler = DistributedSampler(dataset) if local_rank != -1 else SequentialSampler(dataset)
+    """ sampler = DistributedSampler(dataset) if local_rank != -1 else SequentialSampler(dataset)
     batch_size = get_effective_batch_size(
         batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
     # WARNING: this will fail if the primary sequence is not the first thing the dataset returns
     batch_sampler = BucketBatchSampler(
-        sampler, batch_size, False, lambda x: len(x[0]), dataset)
+        sampler, batch_size, False, lambda x: len(x[0]), dataset) """
 
     loader = DataLoader(
         dataset,
         num_workers=num_workers,
         shuffle=shuffle_dataset,
         collate_fn=dataset.collate_fn,  # type: ignore
-        batch_sampler=batch_sampler)
+        shuffle=False)
 
     return loader
 
