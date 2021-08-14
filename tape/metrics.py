@@ -100,14 +100,7 @@ def spectral_angle(target: Sequence[float],
                        charge : Sequence[int]) -> float:
     return spectral_angle_calc(target, prediction, sequence, charge) """
 
-#import torch
-#cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
-
-from numpy import dot
-from numpy.linalg import norm
-
-def cosineSimilarity(a, b):
- return dot(a, b)/(norm(a)*norm(b))
+from scipy.spatial.distance import cosine as cosineSimilarity
 
 
 @registry.register_metric('spectral_angle')
