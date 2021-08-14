@@ -111,7 +111,7 @@ def cosineSimilarity(a, b):
 
 
 @registry.register_metric('spectral_angle')
-def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = torch.finfo(torch.float16).eps):
+def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = np.finfo(torch.float16).eps):
     true = np.asarray(true)
     pred = np.asarray(pred)
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
