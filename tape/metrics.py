@@ -100,7 +100,7 @@ def spectral_angle(target: Sequence[float],
                        charge : Sequence[int]) -> float:
     return spectral_angle_calc(target, prediction, sequence, charge) """
 
-
+import torch
 cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 @registry.register_metric('spectral_angle')
 def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = torch.finfo(torch.float16).eps):
