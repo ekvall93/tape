@@ -7,7 +7,7 @@ import sys
 
 import torch
 import torch.distributed as dist
-from torch.utils.data import DataLoader, RandomSampler, Dataset
+from torch.utils.data import DataLoader, RandomSampler, Dataset, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
 from ..optimization import AdamW
 
@@ -112,7 +112,7 @@ def setup_loader(dataset: Dataset,
                  gradient_accumulation_steps: int,
                  num_workers: int,
                  shuffle_dataset: bool = True) -> DataLoader:
-    sampler = DistributedSampler(dataset) if local_rank != -1 else RandomSampler(dataset, shuffle=False)
+    sampler = DistributedSampler(dataset) if local_rank != -1 else SequentialSampler(dataset)
     batch_size = get_effective_batch_size(
         batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
     # WARNING: this will fail if the primary sequence is not the first thing the dataset returns
