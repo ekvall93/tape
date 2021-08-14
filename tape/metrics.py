@@ -104,6 +104,8 @@ import torch
 cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 @registry.register_metric('spectral_angle')
 def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = torch.finfo(torch.float16).eps):
+    true = np.asarray(true)
+    pred = np.asarray(pred)
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
