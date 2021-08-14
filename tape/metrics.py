@@ -100,8 +100,16 @@ def spectral_angle(target: Sequence[float],
                        charge : Sequence[int]) -> float:
     return spectral_angle_calc(target, prediction, sequence, charge) """
 
-import torch
-cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+#import torch
+#cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+
+from numpy import dot
+from numpy.linalg import norm
+
+def cosineSimilarity(a, b):
+ return dot(a, b)/(norm(a)*norm(b))
+
+
 @registry.register_metric('spectral_angle')
 def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = torch.finfo(torch.float16).eps):
     true = np.asarray(true)
@@ -109,11 +117,11 @@ def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsil
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
-    cosSim = cos(pred_masked, true_masked)
-    product_clipped = torch.clamp(cosSim, min=-(1-epsilon), max=(1 - epsilon))
-    arccos = torch.acos(product_clipped)
+    cosSim = cosineSimilarity(pred_masked, true_masked)
+    product_clipped = np.clip(cosSim, min=-(1-epsilon), max=(1 - epsilon))
+    arccos = np.arccos(product_clipped)
     spectral_distance = 2 * arccos / np.pi
-    return torch.median(spectral_distance)
+    return np.median(spectral_distance)
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
