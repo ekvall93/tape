@@ -383,7 +383,7 @@ def run_eval_epoch(eval_loader: DataLoader,
         for pred, target in zip(predictions, targets):
             save_outputs.append({'prediction': pred, 'target': target})
 
-        return save_outputs
+    return save_outputs
 
 
 def run_train(model_type: str,
