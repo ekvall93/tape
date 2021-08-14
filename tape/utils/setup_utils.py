@@ -117,8 +117,8 @@ def setup_loader(dataset: Dataset,
     batch_size = get_effective_batch_size(
             batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
 
-    if shuffle_dataset and isEval:
-        batch_sampler = dataset
+    if not shuffle_dataset and isEval:
+        batch_sampler = SequentialSampler(dataset, batch_size=batch_size)
     else:
         sampler = DistributedSampler(dataset) if local_rank != -1 else RandomSampler(dataset)
         # WARNING: this will fail if the primary sequence is not the first thing the dataset returns
