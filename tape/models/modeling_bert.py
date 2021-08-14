@@ -604,13 +604,13 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         self.pooler = ProteinBertPooler(config)
 
 
-    def forward(self, input_ids, energy, charge, input_mask=None, targets=None):
+    def forward(self, input_ids, collision_energy, charge, input_mask=None, targets=None):
 
         outputs = self.bert(input_ids, input_mask=input_mask)
 
         sequence_output, pooled_output = outputs[:2]
 
-        meta_data = torch.cat((charge, energy[:,None]), dim=1)
+        meta_data = torch.cat((charge, collision_energy[:,None]), dim=1)
 
         extended_attention_mask = input_mask.unsqueeze(1).unsqueeze(2)
 
