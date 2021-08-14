@@ -583,14 +583,7 @@ def run_eval(model_type: str,
     save_outputs = run_eval_epoch(valid_loader, runner, is_master, task)
     target = [el['target'] for el in save_outputs]
     prediction = [el['prediction'] for el in save_outputs]
-
-    if "prosit_fragmentation" in task:
-        sequence = [el['input_ids'] for el in save_outputs]
-        charge = [el['charge'] for el in save_outputs]
-        metrics_to_save = {name: metric(target, prediction, sequence, charge)
-                           for name, metric in zip(metrics, metric_functions)}
-    else:
-        metrics_to_save = {name: metric(target, prediction)
+    metrics_to_save = {name: metric(target, prediction)
                            for name, metric in zip(metrics, metric_functions)}
     logger.info(''.join(f'{name}: {val}' for name, val in metrics_to_save.items()))
 

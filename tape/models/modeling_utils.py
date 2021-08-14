@@ -892,49 +892,6 @@ class Attention(nn.Module):
 
         return attn_hidden, attn_weights
 
-
-""" class ValuePredictionHeadPrositFragmentation(nn.Module):
-    def __init__(self, hidden_size: int, out:int, dropout: float = 0.):
-        super().__init__()
-        self.value_prediction = SimpleMLP(512, 256, out, dropout, True)
-        self.meta_dense = SimpleLinear(7, hidden_size, dropout, False)
-        self.G = ProteinLSTMLayer(768, 512)
-        #self.pooler = ProteinLSTMPooler(256, 1)
-        self.output_layer = nn.Linear(29,512)
-        #self.decode = ProteinLSTMModelProsit(ProteinLSTMConfig())
-        self.attn = Attention('cuda', 512)
-
-    def forward(self, sequence_output, meta_data, targets=None):
-        meta = self.meta_dense(meta_data)
-
-        
-        x = meta[:,None,:] * sequence_output
-        
-        batch_size, seq_len, hidden = x.shape
-        
-
-        sequence, pooled_out = self.G(x)
-
-        final_state = pooled_out[0].view(1, 1, batch_size, 512)[-1]
-        final_hidden_state = final_state.squeeze(0)
-
-        
-        rnn_output = sequence
-        
-        X, attn_weights = self.attn(rnn_output, final_hidden_state)
-        
-        value_pred = self.value_prediction(X)
-        outputs = (value_pred,)
-
-        
-        if targets is not None:
-            loss_fct = masked_spectral_distance
-            
-            value_pred_loss = loss_fct(targets, value_pred)
-            outputs = (value_pred_loss,) + outputs
-        return outputs  # (loss), value_prediction """
-
-
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
@@ -945,10 +902,8 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         value_pred = self.value_prediction(pooled_output)
         outputs = (value_pred,)
 
-        
         if targets is not None:
             loss_fct = masked_spectral_distance
-            
             value_pred_loss = loss_fct(targets, value_pred)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
