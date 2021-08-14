@@ -112,6 +112,9 @@ def setup_loader(dataset: Dataset,
                  gradient_accumulation_steps: int,
                  num_workers: int,
                  shuffle_dataset: bool = True) -> DataLoader:
+
+    batch_size = get_effective_batch_size(
+        batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
     """ sampler = DistributedSampler(dataset) if local_rank != -1 else SequentialSampler(dataset)
     batch_size = get_effective_batch_size(
         batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
@@ -124,6 +127,7 @@ def setup_loader(dataset: Dataset,
         num_workers=num_workers,
         shuffle=shuffle_dataset,
         collate_fn=dataset.collate_fn,  # type: ignore
+        batch_size=batch_size
         )
 
     return loader
