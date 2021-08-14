@@ -117,8 +117,9 @@ def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsil
     
     arccos = np.arccos(product)
     spectral_distance = 2 * arccos / np.pi
-
-    return spectral_distance
+    spectral_distance = 1 - spectral_distance
+    spectral_distance = np.nan_to_num(spectral_distance)
+    return np.median(spectral_distance)
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
