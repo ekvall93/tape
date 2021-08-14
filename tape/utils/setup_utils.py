@@ -115,23 +115,25 @@ def setup_loader(dataset: Dataset,
                  isEval: bool = False) -> DataLoader:
 
     batch_size = get_effective_batch_size(
-            batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
-
+        batch_size, local_rank, n_gpu, gradient_accumulation_steps) * n_gpu
     if not shuffle_dataset and isEval:
-        batch_sampler = dataset
+        loader = DataLoader(
+        dataset,
+        num_workers=num_workers,
+        collate_fn=dataset.collate_fn,  # type: ignore
+        batch_size=batch_size) 
     else:
         sampler = DistributedSampler(dataset) if local_rank != -1 else RandomSampler(dataset)
+        
         # WARNING: this will fail if the primary sequence is not the first thing the dataset returns
         batch_sampler = BucketBatchSampler(
             sampler, batch_size, False, lambda x: len(x[0]), dataset)
 
-    loader = DataLoader(
-        batch_sampler,
-        num_workers=num_workers,
-        shuffle=shuffle_dataset,
-        collate_fn=dataset.collate_fn,  # type: ignore,
-        batch_size = batch_size
-        )
+        loader = DataLoader(
+            dataset,
+            num_workers=num_workers,
+            collate_fn=dataset.collate_fn,  # type: ignore
+            batch_sampler=batch_sampler)
 
     return loader
 
