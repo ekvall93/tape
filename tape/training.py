@@ -578,7 +578,7 @@ def run_eval(model_type: str,
     valid_dataset = utils.setup_dataset(task, data_dir, split, tokenizer)
     valid_loader = utils.setup_loader(
         valid_dataset, batch_size, local_rank, n_gpu,
-        1, num_workers, shuffle_dataset)
+        1, num_workers, shuffle_dataset=shuffle_dataset, isEval=True)
 
     metric_functions = [registry.get_metric(name) for name in metrics]
     save_outputs = run_eval_epoch(valid_loader, runner, is_master, task)
