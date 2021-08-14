@@ -380,58 +380,8 @@ def run_eval_epoch(eval_loader: DataLoader,
         predictions = outputs[1].cpu().numpy()
         targets = batch['targets'].cpu().numpy()
 
-        if "prosit_fragmentation" in task: 
-            keys = ['collision_energy',
-            'collision_energy_aligned_normed',
-            'collision_energy_normed',
-            'intensities_raw',
-            'masses_raw',
-            'method',
-            'precursor_charge_onehot',
-            'rawfile',
-            'reverse',
-            'scan_number',
-            'score',
-            'sequence_integer']
-
-            output = dict()
-            output["prediction"] = predictions
-            output["target"] = targets
-            output["sequence"] = batch['input_ids'].cpu().numpy()
-            output["charge"] = batch['charge'].cpu().numpy()
-            output["energy"] = batch['energy'].cpu().numpy()
-            
-            for k in keys:
-                output[k] = batch[k]
-
-            LIST = list()
-            for i, (k, dk) in enumerate(output.items()):
-                if i == 0:
-                    for v in dk:
-                        LIST.append({k: v})
-                else:
-                    for j, v in enumerate(dk):
-                        LIST[j][k] = v
-
-            newList = list()                        
-            for r in LIST:
-                intensities_raw = [r["target"]]
-                intensities_pred = [r["prediction"]]
-                sequence_integer = [r["sequence_integer"]]
-                precursor_charge_onehot = [r["charge"]]
-                sa, cleanIntensities = spectral_angle_calc(intensities_raw, intensities_pred, sequence_integer, precursor_charge_onehot, returnIntensities=True)
-                r["spectral_angle"] = sa
-                r["intensities_pred"] = cleanIntensities
-                newList.append(r)
-
-            for row in newList:
-                save_outputs.append(dict(row))
-
-            #for pred, target, sequence, charge, energy in zip(predictions, targets, sequence_integer, charges, energy):
-            #    save_outputs.append({'prediction': pred, 'target': target, 'sequence': sequence, 'charge' : charge, 'energy': energy})
-        else:
-            for pred, target in zip(predictions, targets):
-                save_outputs.append({'prediction': pred, 'target': target})
+        for pred, target in zip(predictions, targets):
+            save_outputs.append({'prediction': pred, 'target': target})
 
     return save_outputs
 
