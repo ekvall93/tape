@@ -667,6 +667,11 @@ class PrositFragmentationDatasetHCD(Dataset):
         data_path = Path(data_path)
         data_file = f'prosit_fragmentation_cid/prosit_fragmentation_cid_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
+        self.keys = [
+                     'intensities_raw',
+                     'collision_energy_aligned_normed',
+                     'precursor_charge_onehot'
+                     ]
         
     def __len__(self) -> int:
         return len(self.data)
@@ -713,7 +718,12 @@ class PrositFragmentationDatasetHCD(Dataset):
         data_path = Path(data_path)
         data_file = f'prosit_fragmentation_hcd/prosit_fragmentation_hcd_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
-        
+        self.keys = [
+                     'intensities_raw',
+                     'collision_energy_aligned_normed',
+                     'precursor_charge_onehot'
+                     ]
+                     
     def __len__(self) -> int:
         return len(self.data)
 
