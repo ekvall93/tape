@@ -585,7 +585,7 @@ def run_eval(model_type: str,
     prediction = [el['prediction'] for el in save_outputs]
 
     if "prosit_fragmentation" in task:
-        sequence = [el['sequence_integer'] for el in save_outputs]
+        sequence = [el['input_ids'] for el in save_outputs]
         charge = [el['charge'] for el in save_outputs]
         metrics_to_save = {name: metric(target, prediction, sequence, charge)
                            for name, metric in zip(metrics, metric_functions)}

@@ -69,8 +69,8 @@ def spectral_angle_calc(target: Sequence[float],
                         sequence: Sequence[int],
                         charge : Sequence[int],
                         returnIntensities: bool = False) -> float:
-
-    sequence_lengths = [np.count_nonzero(s) for s in sequence]
+    EXTRA_TOKENS = 2
+    sequence_lengths = [np.count_nonzero(s) - EXTRA_TOKENS for s in sequence]
     #print(sequence_lengths)
     intensities = np.array(prediction)
     intensities_raw = np.array(target)
