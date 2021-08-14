@@ -110,11 +110,15 @@ def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsil
     pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
     true_masked = ((true + 1) * true) / (true + 1 + epsilon)
     
-    cosSim = cosineSimilarity(pred_masked, true_masked.T)
-    product_clipped = np.clip(cosSim, -(1-epsilon), (1 - epsilon))
-    arccos = np.arccos(product_clipped)
+    pred_norm = normalize(pred_masked)
+    true_norm = normalize(true_masked)
+    product = np.sum(pred_norm * true_norm, axis=1)
+    
+    
+    arccos = np.arccos(product)
     spectral_distance = 2 * arccos / np.pi
-    return np.median(spectral_distance)
+
+    return spectral_distance
 
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
