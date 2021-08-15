@@ -31,9 +31,7 @@ from torch import nn
 import torch.nn.functional as F
 
 from .file_utils import cached_path
-
-from .losses import masked_spectral_distance
-
+import numpy as np
 
 #from .modeling_lstm import ProteinLSTMModelProsit, ProteinLSTMConfig
 CONFIG_NAME = "config.json"
@@ -896,6 +894,17 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
         self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+
+    def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
+        pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
+        true_masked = ((true + 1) * true) / (true + 1 + epsilon)
+        
+        sim = self.cosSim(pred_masked, true_masked)
+        product_clipped = torch.clamp(sim, min=-(1-epsilon), max=(1 - epsilon))
+        arccos = torch.acos(product_clipped)
+        spectral_distance = 2 * arccos / np.pi
+        return torch.mean(spectral_distance)
         
 
     def forward(self, pooled_output, targets=None):
