@@ -722,7 +722,7 @@ class SimpleMLP(nn.Module):
                  dropout: float = 0.,
                  final_activation=False):
         super().__init__()
-        activation = nn.ReLU()
+        activation = nn.LeakyReLU(0.3)
         layers = [
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
             activation,
