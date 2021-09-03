@@ -719,13 +719,9 @@ class SimpleMLP(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  out_dim: int,
-                 dropout: float = 0.,
-                 useLeakyRelu: bool =False):
+                 dropout: float = 0.):
         super().__init__()
-        if useLeakyRelu:
-            activation = nn.LeakyReLU(0.3)
-        else:
-            activation = nn.ReLU()
+        activation = nn.ReLU()
 
         self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
@@ -893,7 +889,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
