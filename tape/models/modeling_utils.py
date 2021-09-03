@@ -908,7 +908,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         outputs = (value_pred,)
 
         if targets is not None:
-            loss_fct = masked_spectral_distance
+            loss_fct = self.masked_spectral_distance
             value_pred_loss = loss_fct(targets, value_pred)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
