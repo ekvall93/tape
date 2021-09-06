@@ -747,7 +747,7 @@ class SimpleLinear(nn.Module):
                  final_activation=False):
         super().__init__()
         if final_activation:
-            activation = F.relu()
+            activation = nn.ReLU()
             self.main = nn.Sequential(
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
                 activation,
