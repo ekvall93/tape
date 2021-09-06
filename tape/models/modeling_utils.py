@@ -747,10 +747,10 @@ class SimpleLinear(nn.Module):
                  final_activation=False):
         super().__init__()
         if final_activation:
-            activation = nn.LeakyRelu()
+            activation = nn.Relu()
             self.main = nn.Sequential(
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-                nn.Relu(),
+                activation,
                 nn.Dropout(dropout, inplace=True),
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
         else:
