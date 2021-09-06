@@ -731,7 +731,6 @@ class SimpleMLP(nn.Module):
         return self.main(x)
 
 class SimpleMLPPrositFragmentation(nn.Module):
-
     def __init__(self,
                  in_dim: int,
                  hid_dim: int,
@@ -739,6 +738,7 @@ class SimpleMLPPrositFragmentation(nn.Module):
                  dropout: float = 0.,
                  final_activation=True):
         super().__init__()
+        print("XXXXX")
         self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
             nn.ReLU(),
