@@ -719,23 +719,34 @@ class SimpleMLP(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  out_dim: int,
+                 dropout: float = 0.):
+        super().__init__()
+        self.main = nn.Sequential(
+            weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
+            nn.ReLU(),
+            nn.Dropout(dropout, inplace=True),
+            weight_norm(nn.Linear(hid_dim, out_dim), dim=None))
+
+    def forward(self, x):
+        return self.main(x)
+
+class SimpleMLPPrositFragmentation(nn.Module):
+
+    def __init__(self,
+                 in_dim: int,
+                 hid_dim: int,
+                 out_dim: int,
                  dropout: float = 0.,
                  final_activation=True):
         super().__init__()
-        activation = nn.ReLU()
-
-        layers = [
+        self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            activation,
+            nn.ReLU(),
             nn.Dropout(dropout, inplace=True),
-            weight_norm(nn.Linear(hid_dim, out_dim), dim=None)
-            ]
-        if final_activation:
-            layers.append(activation)
-            layers.append(nn.Dropout(dropout, inplace=True))
-            layers.append(weight_norm(nn.Linear(out_dim, out_dim), dim=None))
-
-        self.main = nn.Sequential(*layers)
+            weight_norm(nn.Linear(hid_dim, out_dim), dim=None),
+            nn.ReLU(),
+            nn.Dropout(dropout, inplace=True),
+            weight_norm(nn.Linear(out_dim, out_dim), dim=None))
 
     def forward(self, x):
         return self.main(x)
@@ -899,7 +910,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.value_prediction = SimpleMLPPrositFragmentation(hidden_size, 512, out, dropout)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
