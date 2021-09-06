@@ -720,16 +720,18 @@ class SimpleMLP(nn.Module):
                  hid_dim: int,
                  out_dim: int,
                  dropout: float = 0.,
-                 final_activation=False):
+                 final_activation=True):
         super().__init__()
-        activation = nn.LeakyReLU(0.3)
+        activation = nn.ReLU()
+
         layers = [
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
             activation,
             nn.Dropout(dropout, inplace=True),
             weight_norm(nn.Linear(hid_dim, out_dim), dim=None)
             ]
-        if final_activation: layers.append(activation)
+        if final_activation:
+            layers.append(activation)
 
         self.main = nn.Sequential(*layers)
 
@@ -742,18 +744,18 @@ class SimpleLinear(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  dropout: float = 0.,
-                 useLeakyRelu: bool =False):
+                 final_activation=False):
         super().__init__()
-        if useLeakyRelu:
-            activation = nn.LeakyReLU(0.3)
+        if final_activation:
+            activation = nn.LeakyRelu()
             self.main = nn.Sequential(
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-                activation,
-                nn.Dropout(dropout, inplace=True))
+                nn.Relu(),
+                nn.Dropout(dropout, inplace=True),
+                weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
         else:
             self.main = nn.Sequential(
-                weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-                nn.Dropout(dropout, inplace=True))
+                weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
 
     def forward(self, x):
         return self.main(x)
@@ -893,7 +895,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):

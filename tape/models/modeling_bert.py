@@ -595,7 +595,7 @@ class ProteinBertForValuePredictionFragmentationProsit(ProteinBertAbstractModel)
         self.predict = ValuePredictionHeadPrositFragmentation(config.hidden_size, 174, config.final_layer_dropout_prob)
 
         self.init_weights()
-        self.meta_dense = SimpleLinear(7, config.hidden_size, config.final_layer_dropout_prob, False)
+        self.meta_dense = SimpleLinear(7, config.hidden_size, config.final_layer_dropout_prob, True)
 
         tmp_config = type('tmp_config', (object,), dict(vars(config), num_hidden_layers=9))
 

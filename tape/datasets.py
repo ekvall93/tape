@@ -678,7 +678,7 @@ class PrositFragmentationDatasetHCD(Dataset):
 
     def __getitem__(self, index: int):
         item = self.data[index]
-        token_ids = self.tokenizer.encode(item['sequence_integer'])
+        token_ids = self.tokenizer.encode(item['peptide_sequence'])
         input_mask = np.ones_like(token_ids)
         return (token_ids, input_mask) + tuple(item[i] for i in self.keys)
 
@@ -729,7 +729,7 @@ class PrositFragmentationDatasetHCD(Dataset):
 
     def __getitem__(self, index: int):
         item = self.data[index]
-        token_ids = self.tokenizer.encode(item['sequence_integer'])
+        token_ids = self.tokenizer.encode(item['peptide_sequence'])
         input_mask = np.ones_like(token_ids)
         return (token_ids, input_mask) + tuple(item[i] for i in self.keys)
 
