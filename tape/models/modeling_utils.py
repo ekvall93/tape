@@ -732,6 +732,8 @@ class SimpleMLP(nn.Module):
             ]
         if final_activation:
             layers.append(activation)
+            layers.append(nn.Dropout(dropout, inplace=True))
+            layers.append(weight_norm(nn.Linear(out_dim, out_dim), dim=None))
 
         self.main = nn.Sequential(*layers)
 
@@ -752,10 +754,12 @@ class SimpleLinear(nn.Module):
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
                 activation,
                 nn.Dropout(dropout, inplace=True),
-                weight_norm(nn.Linear(hid_dim, hid_dim), dim=None))
+                weight_norm(nn.Linear(hid_dim, hid_dim), dim=None),
+                nn.Dropout(dropout, inplace=True))
         else:
             self.main = nn.Sequential(
-                weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
+                weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
+                nn.Dropout(dropout, inplace=True))
 
     def forward(self, x):
         return self.main(x)
@@ -895,7 +899,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, False)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
