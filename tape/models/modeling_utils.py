@@ -752,7 +752,7 @@ class SimpleLinear(nn.Module):
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
                 activation,
                 nn.Dropout(dropout, inplace=True),
-                weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
+                weight_norm(nn.Linear(hid_dim, hid_dim), dim=None))
         else:
             self.main = nn.Sequential(
                 weight_norm(nn.Linear(in_dim, hid_dim), dim=None))
