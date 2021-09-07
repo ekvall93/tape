@@ -767,7 +767,7 @@ class PrositFragmentationDatasetHCD(Dataset):
         self.tokenizer = tokenizer
 
         data_path = Path(data_path)
-        data_file = f'prosit_iRT/prosit_iRT_{split}.lmdb'
+        data_file = f'prosit_irt/prosit_irt_{split}.lmdb'
         self.data = LMDBDataset(data_path / data_file, in_memory)
         self.keys = [
                      'iRT'
