@@ -496,6 +496,7 @@ class ProteinBertForMaskedLM(ProteinBertAbstractModel):
 
 @registry.register_task_model('fluorescence', 'transformer')
 @registry.register_task_model('stability', 'transformer')
+@registry.register_task_model('prosit_iRT', 'transformer')
 class ProteinBertForValuePrediction(ProteinBertAbstractModel):
 
     def __init__(self, config):

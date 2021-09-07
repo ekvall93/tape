@@ -750,6 +750,52 @@ class PrositFragmentationDatasetHCD(Dataset):
                 'collision_energy': collision_energy_tensor,
                 'charge': charge_tensor}
 
+
+@registry.register_task('prosit_iRT')
+class PrositFragmentationDatasetHCD(Dataset):
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'valid', 'test'):
+            raise ValueError(f"Unrecognized split: {split}. "
+                             f"Must be one of ['train', 'valid', 'test']")
+        if isinstance(tokenizer, str):
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        data_path = Path(data_path)
+        data_file = f'prosit_iRT/prosit_iRT_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory)
+        self.keys = [
+                     'iRT'
+                     ]
+                     
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(self, index: int):
+        item = self.data[index]
+        token_ids = self.tokenizer.encode(item['peptide_sequence'])
+        input_mask = np.ones_like(token_ids)
+        return (token_ids, input_mask) + tuple(item[i] for i in self.keys)
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        input_ids, input_mask, iRT = tuple(zip(*batch))
+
+        iRT = np.stack(iRT)
+        iRT = torch.FloatTensor(iRT)  # type: ignore
+        
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        
+
+        return {'input_ids': input_ids,
+                'input_mask': input_mask,
+                'targets': iRT}
+
 @registry.register_task('trrosetta')
 class TRRosettaDataset(Dataset):
 
