@@ -909,7 +909,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLPPrositFragmentation(hidden_size, 512, out, dropout)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
