@@ -785,8 +785,8 @@ class PrositFragmentationDatasetHCD(Dataset):
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         input_ids, input_mask, iRT = tuple(zip(*batch))
 
-        iRT = np.stack(iRT)
-        iRT = torch.FloatTensor(iRT[:,None])  # type: ignore
+        #iRT = np.stack(iRT)
+        iRT = torch.FloatTensor(iRT)  # type: ignore
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
         input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
         
