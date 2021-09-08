@@ -852,8 +852,8 @@ class ValuePredictionHead(nn.Module):
 
         if targets is not None:
             loss_fct = nn.MSELoss()
-            print(value_pred.shape)
-            print(targets.shape)
+            print(value_pred[:3])
+            print(targets[:3])
             value_pred_loss = loss_fct(value_pred, targets)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
