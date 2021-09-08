@@ -787,9 +787,6 @@ class PrositFragmentationDatasetHCD(Dataset):
 
         iRT = np.stack(iRT)
         iRT = torch.FloatTensor(iRT)  # type: ignore
-
-        print(iRT)
-        
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
         input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
         
