@@ -730,25 +730,7 @@ class SimpleMLP(nn.Module):
     def forward(self, x):
         return self.main(x)
 
-class SimpleMLPPrositFragmentation(nn.Module):
-    def __init__(self,
-                 in_dim: int,
-                 hid_dim: int,
-                 out_dim: int,
-                 dropout: float = 0.,
-                 final_activation=True):
-        super().__init__()
-        self.main = nn.Sequential(
-            weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            nn.ReLU(),
-            nn.Dropout(dropout, inplace=True),
-            weight_norm(nn.Linear(hid_dim, out_dim), dim=None),
-            nn.ReLU(),
-            nn.Dropout(dropout, inplace=True),
-            weight_norm(nn.Linear(out_dim, out_dim), dim=None))
 
-    def forward(self, x):
-        return self.main(x)
 
 class SimpleLinear(nn.Module):
 
@@ -870,6 +852,8 @@ class ValuePredictionHead(nn.Module):
 
         if targets is not None:
             loss_fct = nn.MSELoss()
+            print(value_pred.shape)
+            print(targets.shape)
             value_pred_loss = loss_fct(value_pred, targets)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
