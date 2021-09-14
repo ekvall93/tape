@@ -719,11 +719,16 @@ class SimpleMLP(nn.Module):
                  in_dim: int,
                  hid_dim: int,
                  out_dim: int,
-                 dropout: float = 0.):
+                 dropout: float = 0.,
+                 useLeakyRelu: bool = False):
         super().__init__()
+        if useLeakyRelu:
+            activation = nn.LeakyReLU()
+        else:
+            activation = nn.ReLU()
         self.main = nn.Sequential(
             weight_norm(nn.Linear(in_dim, hid_dim), dim=None),
-            nn.ReLU(),
+            activation,
             nn.Dropout(dropout, inplace=True),
             weight_norm(nn.Linear(hid_dim, out_dim), dim=None))
 
@@ -892,7 +897,7 @@ class Attention(nn.Module):
 class ValuePredictionHeadPrositFragmentation(nn.Module):
     def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
         super().__init__()
-        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout)
+        self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
@@ -900,7 +905,7 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         true_masked = ((true + 1) * true) / (true + 1 + epsilon)
         
         sim = self.cosSim(pred_masked, true_masked)
-        product_clipped = torch.clamp(sim, min=-(1-epsilon), max=(1 - epsilon))
+        product_clipped = torch.clamp(sim, min=epsilon, max=(1 - epsilon))
         arccos = torch.acos(product_clipped)
         spectral_distance = 2 * arccos / np.pi
         return torch.mean(spectral_distance)
