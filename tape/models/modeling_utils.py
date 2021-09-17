@@ -903,7 +903,8 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
     def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
         pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
         true_masked = ((true + 1) * true) / (true + 1 + epsilon)
-        true_masked[true_masked==0] = -0.02
+
+        true_masked[true==0] = -0.02
         
         
         sim = self.cosSim(pred_masked, true_masked)
