@@ -723,7 +723,7 @@ class SimpleMLP(nn.Module):
                  useLeakyRelu: bool = False):
         super().__init__()
         if useLeakyRelu:
-            activation = nn.LeakyReLU()
+            activation = nn.ReLU6()
         else:
             activation = nn.ReLU()
         self.main = nn.Sequential(
@@ -905,10 +905,11 @@ class ValuePredictionHeadPrositFragmentation(nn.Module):
         true_masked = ((true + 1) * true) / (true + 1 + epsilon)
         
         sim = self.cosSim(pred_masked, true_masked)
-        product_clipped = torch.clamp(sim, min=epsilon, max=(1 - epsilon))
+        product_clipped = torch.clamp(sim, min=-(1 - epsilon), max=(1 - epsilon))
         arccos = torch.acos(product_clipped)
         spectral_distance = 2 * arccos / np.pi
         return torch.mean(spectral_distance)
+        #return torch.mean(sim)
         
 
     def forward(self, pooled_output, targets=None):
