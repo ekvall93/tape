@@ -895,33 +895,30 @@ class Attention(nn.Module):
         return attn_hidden, attn_weights
 
 class ValuePredictionHeadPrositFragmentation(nn.Module):
-    def __init__(self, hidden_size: int, out:int, dropout: float = 0., config=None):
+    def __init__(self, hidden_size: int, out:int, dropout: float, delta: float, config=None):
         super().__init__()
         self.value_prediction = SimpleMLP(hidden_size, 512, out, dropout, True)
         self.cosSim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+        self.delta = delta
 
-    def masked_spectral_distance(self, true, pred, epsilon = torch.finfo(torch.float16).eps):
+    def masked_spectral_distance(self, true, pred, delta, epsilon = torch.finfo(torch.float16).eps):
         pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
         true_masked = ((true + 1) * true) / (true + 1 + epsilon)
-
-        true_masked[true==0] = -0.02
-        
-        
+        #Add a constant on non-existing peaks to punish false-positives
+        true_masked[true==0] = delta
         sim = self.cosSim(pred_masked, true_masked)
         product_clipped = torch.clamp(sim, min=-(1 - epsilon), max=(1 - epsilon))
         arccos = torch.acos(product_clipped)
         spectral_distance = 2 * arccos / np.pi
         return torch.mean(spectral_distance)
-        #return torch.mean(sim)
         
-
     def forward(self, pooled_output, targets=None):
         value_pred = self.value_prediction(pooled_output)
         outputs = (value_pred,)
 
         if targets is not None:
             loss_fct = self.masked_spectral_distance
-            value_pred_loss = loss_fct(targets, value_pred)
+            value_pred_loss = loss_fct(targets, value_pred, self.delta)
             outputs = (value_pred_loss,) + outputs
         return outputs  # (loss), value_prediction
 
