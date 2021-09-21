@@ -121,6 +121,27 @@ def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsil
     spectral_distance = np.nan_to_num(spectral_distance)
     return np.median(spectral_distance)
 
+@registry.register_metric('jacc_alpha')
+def masked_spectral_distance(true: Sequence[float], pred: Sequence[float], epsilon : float = np.finfo(np.float16).eps):
+    true = np.asarray(true)
+    pred = np.asarray(pred)
+    pred_masked = ((true + 1) * pred) / (true + 1 + epsilon)
+    true_masked = ((true + 1) * true) / (true + 1 + epsilon)
+    
+    pred_norm = normalize(pred_masked)
+    true_norm = normalize(true_masked)
+
+    pred_norm_bool = pred_norm > 0
+    true_norm = true_norm > 0
+
+    print(pred_norm_bool)
+    print(true_norm)
+    exit()
+
+    tp = pred_norm_bool & true_norm
+    
+    return np.median(spectral_distance)
+
 @registry.register_metric('mae')
 def mean_absolute_error(target: Sequence[float],
                         prediction: Sequence[float]) -> float:
