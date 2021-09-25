@@ -650,7 +650,7 @@ class SecondaryStructureDataset(Dataset):
         return output
 
 @registry.register_task('prosit_fragmentation_cid')
-class PrositFragmentationDatasetHCD(Dataset):
+class PrositFragmentationDatasetCID(Dataset):
     def __init__(self,
                  data_path: Union[str, Path],
                  split: str,
@@ -752,7 +752,7 @@ class PrositFragmentationDatasetHCD(Dataset):
 
 
 @registry.register_task('prosit_iRT')
-class PrositFragmentationDatasetHCD(Dataset):
+class PrositFragmentationDatasetIRT(Dataset):
     def __init__(self,
                  data_path: Union[str, Path],
                  split: str,
